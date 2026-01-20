@@ -14,6 +14,7 @@
             color: #2c3e50;
             user-select: none;
             -webkit-user-select: none;
+            touch-action: manipulation;
         }
         
         h1 { color: #e17055; font-size: 1.5em; margin: 10px 0; }
@@ -33,7 +34,6 @@
             position: relative;
         }
 
-        /* Thanh tiến độ */
         .progress-bar {
             width: 100%;
             height: 10px;
@@ -52,7 +52,6 @@
         .visual-area { font-size: 4.5em; margin: 10px 0; min-height: 80px; }
         .question-text { font-size: 1.4em; margin-bottom: 15px; color: #2d3436; font-weight: bold; }
 
-        /* Nút bấm trắc nghiệm */
         .btn {
             background: #0984e3;
             color: white;
@@ -71,42 +70,58 @@
         }
         .btn:active { transform: translateY(3px); box-shadow: 0 2px #74b9ff; }
         
-        /* Giao diện Xếp chữ (Spelling) */
+        /* Style cho phần Spelling (Xếp chữ) */
+        .spelling-board {
+            margin-bottom: 20px;
+            min-height: 50px;
+        }
         .spelling-slot {
             display: inline-block;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-bottom: 3px solid #333;
             margin: 5px;
-            font-size: 1.5em;
-            line-height: 40px;
+            font-size: 1.6em;
+            line-height: 45px;
             color: #0984e3;
             font-weight: bold;
+            cursor: pointer; /* Cho phép bấm vào để xóa */
+            background-color: #f1f2f6;
+            border-radius: 5px 5px 0 0;
         }
+        .spelling-slot:hover {
+            background-color: #ffeaa7;
+        }
+        
         .letter-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .btn-letter {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             background: #fdcb6e;
             color: #2d3436;
-            border-radius: 10px;
-            font-size: 1.3em;
+            border-radius: 12px;
+            font-size: 1.4em;
             font-weight: bold;
             border: none;
             box-shadow: 0 4px #e17055;
             cursor: pointer;
         }
         .btn-letter.used {
-            opacity: 0.3;
+            opacity: 0; /* Ẩn hẳn đi khi đã chọn */
             pointer-events: none;
-            box-shadow: none;
-            transform: translateY(4px);
+            transform: scale(0);
+            transition: all 0.2s;
+        }
+        .btn-letter.visible {
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.2s;
         }
 
         .btn-unit6 { background: #ff7675; box-shadow: 0 4px #d63031; }
@@ -138,7 +153,7 @@
             <div id="display-area">
                 <div class="question-text" id="q-text">Loading...</div>
                 <div class="visual-area" id="q-visual"></div>
-                <div id="spelling-board" class="hidden"></div>
+                <div id="spelling-board" class="spelling-board hidden"></div>
             </div>
 
             <div id="options-area"></div>
@@ -149,7 +164,7 @@
     </div>
 
     <script>
-        // --- 1. DỮ LIỆU GỐC (Đã mở rộng thêm Phonics và Story) ---
+        // --- 1. DỮ LIỆU ---
         var rawData = {
             "unit6": {
                 vocab: [
@@ -157,23 +172,36 @@
                     { w: "French fries", m: "Khoai tây chiên", e: "🍟" },
                     { w: "Fish", m: "Cá", e: "🐟" },
                     { w: "Salad", m: "Rau trộn", e: "🥗" },
-                    { w: "Ice cream", m: "Kem", e: "🍦" }, // Bỏ dấu gạch nối cho dễ xếp chữ
+                    { w: "Ice cream", m: "Kem", e: "🍦" },
                     { w: "Noodles", m: "Mì / Bún", e: "🍜" },
                     { w: "Fruit", m: "Trái cây", e: "🍎" },
                     { w: "Soup", m: "Canh / Súp", e: "🍲" },
-                    { w: "Bed", m: "Cái giường", e: "🛏️" }, // Phonics
+                    { w: "Chicken", m: "Thịt gà", e: "🍗" },
+                    { w: "Juice", m: "Nước ép", e: "🧃" },
+                    { w: "Rice", m: "Cơm", e: "🍚" },
+                    { w: "Cake", m: "Bánh ngọt", e: "🍰" },
+                    { w: "Hamburger", m: "Bánh hamburger", e: "🍔" },
+                    { w: "Hot dog", m: "Xúc xích nóng", e: "🌭" },
+                    { w: "Sushi", m: "Sushi", e: "🍣" },
+                    { w: "Kimchi", m: "Kim chi", e: "🥬" },
+                    { w: "Taco", m: "Bánh Taco", e: "🌮" },
+                    { w: "Bed", m: "Cái giường", e: "🛏️" },
                     { w: "Pen", m: "Cây bút mực", e: "🖊️" },
                     { w: "Red", m: "Màu đỏ", e: "🔴" },
                     { w: "Ten", m: "Số 10", e: "🔟" },
                     { w: "Bell", m: "Cái chuông", e: "🔔" }
                 ],
                 sentences: [
-                    { q: "I ____ noodles.", a: "want", w: ["like", "have"], e: "🍜" },
-                    { q: "Can you use ____?", a: "chopsticks", w: ["spoon", "fork"], e: "🥢" },
-                    { q: "____ away the trash.", a: "Throw", w: ["Put", "Eat"], e: "🗑️" },
-                    { q: "Find a ____.", a: "seat", w: ["table", "food"], e: "🪑" },
-                    { q: "Beth has ____.", a: "spaghetti", w: ["salad", "soup"], e: "🍝" }, // Story
-                    { q: "Toni likes fish and ____.", a: "rice", w: ["bread", "meat"], e: "🐟🍚" }
+                    // Audio đã được sửa thành câu hoàn chỉnh để đọc tự nhiên
+                    { q: "What do you ____?", a: "want", w: ["have", "like"], e: "🤔", audio: "What do you want?" },
+                    { q: "I ____ noodles.", a: "want", w: ["use", "see"], e: "🍜", audio: "I want noodles." },
+                    { q: "We ____ soup.", a: "want", w: ["is", "are"], e: "🍲", audio: "We want soup." },
+                    { q: "Can you use ____?", a: "chopsticks", w: ["spoon", "fork"], e: "🥢", audio: "Can you use chopsticks?" },
+                    { q: "Yes, I ____.", a: "can", w: ["can't", "am"], e: "👍", audio: "Yes, I can." },
+                    { q: "____ your food.", a: "Choose", w: ["Throw", "Sleep"], e: "👉🍱", audio: "Choose your food." },
+                    { q: "Find a ____.", a: "seat", w: ["food", "trash"], e: "🪑", audio: "Find a seat." },
+                    { q: "Throw away the ____.", a: "trash", w: ["lunch", "seat"], e: "🗑️", audio: "Throw away the trash." },
+                    { q: "Get in ____.", a: "line", w: ["circle", "box"], e: "🚶🚶‍♀️", audio: "Get in line." }
                 ]
             },
             "unit7": {
@@ -183,20 +211,30 @@
                     { w: "Paints", m: "Màu vẽ", e: "🎨" },
                     { w: "Stickers", m: "Miếng dán", e: "🌟" },
                     { w: "Pins", m: "Cái ghim", e: "📌" },
+                    { w: "Rulers", m: "Thước kẻ", e: "📏" },
+                    { w: "Crayons", m: "Bút sáp màu", e: "🖍️" },
+                    { w: "Erasers", m: "Cục tẩy", e: "🧼" },
+                    { w: "Markers", m: "Bút lông", e: "🖊️" },
                     { w: "In", m: "Ở trong", e: "📥" },
                     { w: "On", m: "Ở trên", e: "🔛" },
                     { w: "Under", m: "Ở dưới", e: "⬇️" },
-                    { w: "Sit", m: "Ngồi", e: "🪑" }, // Phonics
+                    { w: "Sit", m: "Ngồi", e: "🪑" },
                     { w: "Hit", m: "Đánh", e: "🏏" },
                     { w: "Big", m: "To lớn", e: "🐘" },
-                    { w: "Dig", m: "Đào đất", e: "⛏️" }
+                    { w: "Dig", m: "Đào đất", e: "⛏️" },
+                    { w: "Fox", m: "Con cáo", e: "🦊" },
+                    { w: "Box", m: "Cái hộp", e: "📦" }
                 ],
                 sentences: [
-                    { q: "The scissors are ____ the box.", a: "in", w: ["on", "under"], e: "📦✂️" },
-                    { q: "Where ____ the stickers?", a: "are", w: ["is", "am"], e: "🌟❓" },
-                    { q: "Draw a head and a ____.", a: "body", w: ["tail", "leg"], e: "🦊" },
-                    { q: "Pluto drew a ____.", a: "fox", w: ["cat", "dog"], e: "🦊" }, // Story
-                    { q: "The rulers are ____ the table.", a: "under", w: ["on", "in"], e: "📏" }
+                    { q: "The scissors are ____ the box.", a: "in", w: ["on", "under"], e: "📦✂️", audio: "The scissors are in the box." },
+                    { q: "Where are the ____?", a: "stickers", w: ["sticker", "stick"], e: "🌟❓", audio: "Where are the stickers?" },
+                    { q: "The paints are ____ the box.", a: "in", w: ["under", "on"], e: "🎨📦", audio: "The paints are in the box." },
+                    { q: "The rulers are ____ the table.", a: "under", w: ["in", "on"], e: "📏⬇️", audio: "The rulers are under the table." },
+                    { q: "How do you ____ fox?", a: "spell", w: ["draw", "say"], e: "🗣️", audio: "How do you spell fox?" },
+                    { q: "What's your favorite ____?", a: "class", w: ["food", "color"], e: "🏫", audio: "What's your favorite class?" },
+                    { q: "Draw a ____ and a body.", a: "head", w: ["leg", "tail"], e: "👤", audio: "Draw a head and a body." },
+                    { q: "Draw 2 ____ and a nose.", a: "eyes", w: ["ears", "legs"], e: "👀", audio: "Draw 2 eyes and a nose." },
+                    { q: "____ the picture.", a: "Color", w: ["Draw", "Spell"], e: "🖍️", audio: "Color the picture." }
                 ]
             }
         };
@@ -205,54 +243,57 @@
         var sessionQuestions = [];
         var currentQ = null;
         var qIndex = 0;
-        var totalQ = 20; // Số câu hỏi mỗi lần chơi
-        var spellingCurrent = ""; // Biến lưu từ đang xếp
+        var totalQ = 20;
+        
+        // Quản lý game xếp chữ
+        var spellingState = {
+            target: "",
+            current: [],
+            letterPool: [] // Chứa danh sách các nút chữ cái và trạng thái
+        };
 
-        // --- 2. HÀM TẠO CÂU HỎI TỰ ĐỘNG (ENGINE) ---
+        // --- 2. ENGINE TẠO CÂU HỎI ---
         function generateSession(unitKey) {
             var data = rawData[unitKey];
             var pool = [];
 
-            // 1. Tạo câu hỏi Vocab (Nhiều dạng)
+            // Từ vựng: Đọc chậm (rate thấp)
             data.vocab.forEach(function(item) {
-                // Dạng 1: Nhìn hình đoán chữ
-                pool.push({ type: "mcq", q: "Cái này tiếng Anh là gì?", sub: item.e, a: item.w, wrong: getWrongs(item.w, data.vocab, "w"), audio: item.w });
-                // Dạng 2: Nghe chọn nghĩa Tiếng Việt
-                pool.push({ type: "mcq", q: "Nghe và chọn nghĩa đúng:", sub: "🔊", a: item.m, wrong: getWrongs(item.m, data.vocab, "m"), audio: item.w });
-                // Dạng 3: Xếp chữ (Spelling) - Chỉ áp dụng với từ không quá dài (<10 ký tự)
-                if (item.w.length <= 10 && item.w.indexOf(" ") === -1) {
-                    pool.push({ type: "spell", q: "Sắp xếp các chữ cái cho đúng:", sub: item.e, a: item.w, audio: item.w });
+                pool.push({ type: "mcq", q: "Cái này tiếng Anh là gì?", sub: item.e, a: item.w, wrong: getWrongs(item.w, data.vocab, "w"), audio: item.w, isSentence: false });
+                pool.push({ type: "mcq", q: "Nghe và chọn nghĩa đúng:", sub: "🔊", a: item.m, wrong: getWrongs(item.m, data.vocab, "m"), audio: item.w, isSentence: false });
+                
+                if (item.w.length <= 8 && item.w.indexOf(" ") === -1) {
+                    pool.push({ type: "spell", q: "Sắp xếp các chữ cái:", sub: item.e, a: item.w, audio: item.w, isSentence: false });
                 }
             });
 
-            // 2. Tạo câu hỏi Sentence
+            // Mẫu câu: Đọc nhanh hơn 1 chút cho tự nhiên
             data.sentences.forEach(function(item) {
-                pool.push({ type: "mcq", q: item.q, sub: item.e, a: item.a, wrong: item.w, audio: item.q.replace("____", "hmm hmm") });
+                pool.push({ type: "mcq", q: item.q, sub: item.e, a: item.a, wrong: item.w, audio: item.audio, isSentence: true });
             });
 
-            // 3. Trộn toàn bộ pool
             pool.sort(function() { return 0.5 - Math.random() });
-
-            // 4. Lấy 20 câu đầu tiên
             return pool.slice(0, totalQ);
         }
 
         function getWrongs(correct, sourceList, field) {
             var res = [];
             var attempts = 0;
+            var allVocab = rawData.unit6.vocab.concat(rawData.unit7.vocab);
+            
             while (res.length < 2 && attempts < 50) {
-                var rand = sourceList[Math.floor(Math.random() * sourceList.length)];
+                var rand = allVocab[Math.floor(Math.random() * allVocab.length)];
                 if (rand[field] !== correct && res.indexOf(rand[field]) === -1) {
                     res.push(rand[field]);
                 }
                 attempts++;
             }
-            if (res.length < 2) res.push("Blue"); // Fallback
+            if (res.length < 2) res.push("Apple");
+            if (res.length < 2) res.push("Banana");
             return res;
         }
 
         // --- 3. LOGIC GAME ---
-
         function initGame(unit) {
             sessionQuestions = generateSession(unit);
             qIndex = 0;
@@ -267,7 +308,6 @@
                 return;
             }
 
-            // Cập nhật thanh tiến độ
             var percent = ((qIndex) / totalQ) * 100;
             document.getElementById('progress-fill').style.width = percent + "%";
 
@@ -284,10 +324,10 @@
             spellingBoard.innerHTML = "";
             spellingBoard.classList.add('hidden');
 
-            speak(currentQ.audio);
+            // Đọc câu hỏi
+            playCurrentAudio();
 
             if (currentQ.type === "mcq") {
-                // Xử lý trắc nghiệm
                 var answers = [currentQ.a].concat(currentQ.wrong);
                 answers.sort(function() { return 0.5 - Math.random() });
                 
@@ -299,51 +339,140 @@
                     optionsArea.appendChild(btn);
                 });
             } else if (currentQ.type === "spell") {
-                // Xử lý xếp chữ
-                spellingBoard.classList.remove('hidden');
-                spellingCurrent = "";
-                var targetWord = currentQ.a.toUpperCase(); // Chuyển về in hoa
-                
-                // 1. Tạo các ô trống
-                for(var i=0; i<targetWord.length; i++) {
-                    var slot = document.createElement('span');
-                    slot.className = 'spelling-slot';
-                    slot.id = 'slot-' + i;
-                    slot.innerText = "_";
-                    spellingBoard.appendChild(slot);
-                }
-
-                // 2. Tạo các nút chữ cái (đã trộn)
-                var letters = targetWord.split('');
-                letters.sort(function() { return 0.5 - Math.random() }); // Trộn chữ
-
-                var letterContainer = document.createElement('div');
-                letterContainer.className = 'letter-container';
-
-                letters.forEach(function(char, idx) {
-                    var btn = document.createElement('button');
-                    btn.className = 'btn-letter';
-                    btn.innerText = char;
-                    btn.onclick = function() { handleLetterClick(char, btn, targetWord); };
-                    letterContainer.appendChild(btn);
-                });
-                optionsArea.appendChild(letterContainer);
-                
-                // Nút xóa làm lại
-                var resetBtn = document.createElement('button');
-                resetBtn.className = 'btn btn-home';
-                resetBtn.innerText = "Làm lại";
-                resetBtn.style.marginTop = "10px";
-                resetBtn.onclick = function() { 
-                    spellingCurrent = ""; 
-                    nextQuestion(); // Hack nhẹ: gọi lại hàm này sẽ render lại từ đầu câu hỏi
-                    qIndex--; // Trừ index để không bị nhảy câu
-                };
-                optionsArea.appendChild(resetBtn);
+                setupSpellingGame(currentQ.a);
             }
         }
 
-        // --- XỬ LÝ TRẮC NGHIỆM ---
+        // --- LOGIC XẾP CHỮ MỚI (UNDO ĐƯỢC) ---
+        function setupSpellingGame(word) {
+            var spellingBoard = document.getElementById('spelling-board');
+            var optionsArea = document.getElementById('options-area');
+            
+            spellingBoard.classList.remove('hidden');
+            spellingState.target = word.toUpperCase();
+            spellingState.current = new Array(word.length).fill(null);
+            spellingState.letterPool = [];
+
+            // 1. Tạo ô trống (Slots)
+            for(var i=0; i<word.length; i++) {
+                var slot = document.createElement('div');
+                slot.className = 'spelling-slot';
+                slot.id = 'slot-' + i;
+                slot.innerText = "";
+                // Bấm vào ô trống để trả chữ về
+                slot.onclick = (function(index) {
+                    return function() { handleSlotClick(index); }
+                })(i);
+                spellingBoard.appendChild(slot);
+            }
+
+            // 2. Tạo nút chữ cái (Buttons)
+            var letters = word.toUpperCase().split('');
+            // Map thêm ID để phân biệt các chữ giống nhau (VD: 2 chữ E trong BEE)
+            var letterObjs = letters.map(function(char, index) {
+                return { char: char, id: index };
+            });
+            letterObjs.sort(function() { return 0.5 - Math.random() });
+
+            var letterContainer = document.createElement('div');
+            letterContainer.className = 'letter-container';
+
+            letterObjs.forEach(function(item) {
+                var btn = document.createElement('button');
+                btn.className = 'btn-letter visible';
+                btn.innerText = item.char;
+                btn.id = 'btn-letter-' + item.id;
+                
+                btn.onclick = function() { handleLetterClick(item, btn); };
+                
+                letterContainer.appendChild(btn);
+                spellingState.letterPool.push(item);
+            });
+            optionsArea.appendChild(letterContainer);
+        }
+
+        function handleLetterClick(item, btnElem) {
+            // Tìm ô trống đầu tiên
+            var emptyIndex = spellingState.current.indexOf(null);
+            if (emptyIndex === -1) return; // Đã đầy
+
+            // Điền vào ô
+            spellingState.current[emptyIndex] = item; // Lưu cả object {char, id}
+            document.getElementById('slot-' + emptyIndex).innerText = item.char;
+            
+            // Ẩn nút vừa bấm
+            btnElem.classList.remove('visible');
+            btnElem.classList.add('used');
+
+            checkSpelling();
+        }
+
+        function handleSlotClick(slotIndex) {
+            var item = spellingState.current[slotIndex];
+            if (!item) return; // Ô đang trống thì không làm gì
+
+            // 1. Xóa nội dung ô
+            spellingState.current[slotIndex] = null;
+            document.getElementById('slot-' + slotIndex).innerText = "";
+
+            // 2. Hiện lại nút tương ứng
+            var btn = document.getElementById('btn-letter-' + item.id);
+            if (btn) {
+                btn.classList.remove('used');
+                btn.classList.add('visible');
+            }
+        }
+
+        function checkSpelling() {
+            // Kiểm tra xem đã điền hết chưa
+            if (spellingState.current.indexOf(null) !== -1) return;
+
+            // Ghép lại thành từ
+            var formedWord = spellingState.current.map(function(i) { return i.char }).join('');
+            
+            if (formedWord === spellingState.target) {
+                correctFeedback();
+            } else {
+                wrongFeedback();
+                // Tự động reset sau 1.5s nếu sai
+                setTimeout(function() {
+                    // Reset toàn bộ
+                    for(var i=0; i<spellingState.current.length; i++) {
+                        handleSlotClick(i); // Trả hết chữ về
+                    }
+                }, 1500);
+            }
+        }
+
+        // --- HÀM XỬ LÝ ÂM THANH NÂNG CAO ---
+        function speak(text, lang, fixedRate) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                var u = new SpeechSynthesisUtterance(text);
+                
+                if (lang === 'vi-VN') {
+                    // Cố gắng ép giọng Tiếng Việt
+                    u.lang = 'vi-VN'; 
+                    u.rate = 1.0; 
+                } else {
+                    u.lang = 'en-US';
+                    if (fixedRate) {
+                        u.rate = fixedRate; // Dùng tốc độ cố định nếu có
+                    } else {
+                        // Nếu là câu dài (isSentence = true) thì đọc nhanh hơn xíu cho tự nhiên (0.7)
+                        // Nếu là từ đơn thì đọc chậm (0.5)
+                        var isSentence = currentQ ? currentQ.isSentence : false;
+                        u.rate = isSentence ? 0.7 : 0.5; 
+                    }
+                }
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        function playCurrentAudio() {
+            if (currentQ && currentQ.audio) speak(currentQ.audio, 'en-US');
+        }
+
         function checkMCQ(ans) {
             if (ans === currentQ.a) {
                 correctFeedback();
@@ -352,73 +481,34 @@
             }
         }
 
-        // --- XỬ LÝ XẾP CHỮ ---
-        function handleLetterClick(char, btnElem, targetWord) {
-            if (spellingCurrent.length >= targetWord.length) return;
-
-            // Điền chữ vào ô trống tiếp theo
-            var currentIndex = spellingCurrent.length;
-            document.getElementById('slot-' + currentIndex).innerText = char;
-            
-            spellingCurrent += char;
-            btnElem.classList.add('used'); // Làm mờ nút đã bấm
-
-            // Kiểm tra kết quả nếu đã điền đủ
-            if (spellingCurrent.length === targetWord.length) {
-                if (spellingCurrent === targetWord) {
-                    correctFeedback();
-                } else {
-                    wrongFeedback();
-                    // Reset sau 1s nếu sai
-                    setTimeout(function() {
-                        spellingCurrent = "";
-                        nextQuestion(); 
-                        qIndex--;
-                    }, 1500);
-                }
-            }
-        }
-
         function correctFeedback() {
             var fb = document.getElementById('feedback');
-            fb.innerHTML = '<span class="correct">Chính xác! Giỏi lắm ' + studentName + '! 🌟</span>';
-            speak("Good job " + studentName);
-            setTimeout(nextQuestion, 1500);
+            fb.innerHTML = '<span class="correct">Đúng rồi! Giỏi lắm Thanh Vân ơi! 🌟</span>';
+            // Chuyển giọng đọc sang Tiếng Anh (tốc độ 0.8 cho hào hứng)
+            speak("Good job Thanh Van!", "en-US", 0.8);
+            setTimeout(nextQuestion, 2000);
         }
 
         function wrongFeedback() {
             var fb = document.getElementById('feedback');
-            fb.innerHTML = '<span class="wrong">Chưa đúng rồi. Cố lên ' + studentName + '! 😅</span>';
-            speak("Try again");
+            fb.innerHTML = '<span class="wrong">Sai rồi, Thanh Vân thử lại nhé! 😅</span>';
+            // Chuyển giọng đọc sang Tiếng Anh
+            speak("Try again!", "en-US", 0.8);
         }
 
         function finishGame() {
             document.getElementById('game-screen').innerHTML = 
                 '<div class="card">' +
-                '<h1>GOOD JOB '+ studentName.toUpperCase() +'! 🏆</h1>' +
+                '<h1>HOAN HÔ THANH VÂN! 🏆</h1>' +
                 '<p style="font-size:5em">🎉</p>' +
-                '<p>Con đã hoàn thành xuất sắc 20 câu hỏi!</p>' +
-                '<button class="btn btn-home" onclick="location.reload()">Chơi lại bài khác</button>' +
+                '<p>Con đã làm rất tốt.</p>' +
+                '<button class="btn btn-home" onclick="location.reload()">Chơi lại nhé</button>' +
                 '</div>';
-            speak("Good job " + studentName + "! You are amazing.");
+            speak("Congratulations Thanh Van! You did a good job!", "en-US", 0.8);
         }
 
-        function speak(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                var u = new SpeechSynthesisUtterance(text);
-                u.lang = 'en-US';
-                u.rate = 0.8;
-                window.speechSynthesis.speak(u);
-            }
-        }
-        
         function goHome() {
             location.reload();
-        }
-        
-        function playCurrentAudio() {
-            if (currentQ && currentQ.audio) speak(currentQ.audio);
         }
 
     </script>
