@@ -113,15 +113,13 @@
             cursor: pointer;
         }
         .btn-letter.used {
-            opacity: 0; /* Ẩn hẳn đi khi đã chọn */
+            opacity: 0; 
             pointer-events: none;
             transform: scale(0);
-            transition: all 0.2s;
         }
         .btn-letter.visible {
             opacity: 1;
             transform: scale(1);
-            transition: all 0.2s;
         }
 
         .btn-unit6 { background: #ff7675; box-shadow: 0 4px #d63031; }
@@ -164,10 +162,11 @@
     </div>
 
     <script>
-        // --- 1. DỮ LIỆU ---
+        // --- 1. DỮ LIỆU ĐƯỢC TRÍCH XUẤT TỪ SÁCH SUPER KIDS (PPTX & PDF) ---
         var rawData = {
             "unit6": {
                 vocab: [
+                    // Core Vocab
                     { w: "Spaghetti", m: "Mỳ Ý", e: "🍝" },
                     { w: "French fries", m: "Khoai tây chiên", e: "🍟" },
                     { w: "Fish", m: "Cá", e: "🐟" },
@@ -176,15 +175,13 @@
                     { w: "Noodles", m: "Mì / Bún", e: "🍜" },
                     { w: "Fruit", m: "Trái cây", e: "🍎" },
                     { w: "Soup", m: "Canh / Súp", e: "🍲" },
+                    // Extra/Review
                     { w: "Chicken", m: "Thịt gà", e: "🍗" },
                     { w: "Juice", m: "Nước ép", e: "🧃" },
                     { w: "Rice", m: "Cơm", e: "🍚" },
                     { w: "Cake", m: "Bánh ngọt", e: "🍰" },
-                    { w: "Hamburger", m: "Bánh hamburger", e: "🍔" },
-                    { w: "Hot dog", m: "Xúc xích nóng", e: "🌭" },
-                    { w: "Sushi", m: "Sushi", e: "🍣" },
-                    { w: "Kimchi", m: "Kim chi", e: "🥬" },
-                    { w: "Taco", m: "Bánh Taco", e: "🌮" },
+                    { w: "Chopsticks", m: "Đôi đũa", e: "🥢" },
+                    // Phonics (Sound 'e')
                     { w: "Bed", m: "Cái giường", e: "🛏️" },
                     { w: "Pen", m: "Cây bút mực", e: "🖊️" },
                     { w: "Red", m: "Màu đỏ", e: "🔴" },
@@ -192,49 +189,55 @@
                     { w: "Bell", m: "Cái chuông", e: "🔔" }
                 ],
                 sentences: [
-                    // Audio đã được sửa thành câu hoàn chỉnh để đọc tự nhiên
+                    // Grammar
                     { q: "What do you ____?", a: "want", w: ["have", "like"], e: "🤔", audio: "What do you want?" },
                     { q: "I ____ noodles.", a: "want", w: ["use", "see"], e: "🍜", audio: "I want noodles." },
                     { q: "We ____ soup.", a: "want", w: ["is", "are"], e: "🍲", audio: "We want soup." },
                     { q: "Can you use ____?", a: "chopsticks", w: ["spoon", "fork"], e: "🥢", audio: "Can you use chopsticks?" },
                     { q: "Yes, I ____.", a: "can", w: ["can't", "am"], e: "👍", audio: "Yes, I can." },
+                    // Do it! (Commands from Page 42)
+                    { q: "Get in ____.", a: "line", w: ["circle", "box"], e: "🚶🚶‍♀️", audio: "Get in line." },
                     { q: "____ your food.", a: "Choose", w: ["Throw", "Sleep"], e: "👉🍱", audio: "Choose your food." },
+                    { q: "____ your food.", a: "Take", w: ["Find", "Make"], e: "🤲🍱", audio: "Take your food." },
                     { q: "Find a ____.", a: "seat", w: ["food", "trash"], e: "🪑", audio: "Find a seat." },
-                    { q: "Throw away the ____.", a: "trash", w: ["lunch", "seat"], e: "🗑️", audio: "Throw away the trash." },
-                    { q: "Get in ____.", a: "line", w: ["circle", "box"], e: "🚶🚶‍♀️", audio: "Get in line." }
+                    { q: "Throw away the ____.", a: "trash", w: ["lunch", "seat"], e: "🗑️", audio: "Throw away the trash." }
                 ]
             },
             "unit7": {
                 vocab: [
+                    // Core Vocab
                     { w: "Scissors", m: "Cây kéo", e: "✂️" },
                     { w: "Paintbrushes", m: "Cọ vẽ", e: "🖌️" },
                     { w: "Paints", m: "Màu vẽ", e: "🎨" },
                     { w: "Stickers", m: "Miếng dán", e: "🌟" },
                     { w: "Pins", m: "Cái ghim", e: "📌" },
+                    // Extra Items
                     { w: "Rulers", m: "Thước kẻ", e: "📏" },
                     { w: "Crayons", m: "Bút sáp màu", e: "🖍️" },
                     { w: "Erasers", m: "Cục tẩy", e: "🧼" },
                     { w: "Markers", m: "Bút lông", e: "🖊️" },
+                    // Prepositions
                     { w: "In", m: "Ở trong", e: "📥" },
                     { w: "On", m: "Ở trên", e: "🔛" },
                     { w: "Under", m: "Ở dưới", e: "⬇️" },
+                    // Phonics (Sound 'i') - Page 54
                     { w: "Sit", m: "Ngồi", e: "🪑" },
                     { w: "Hit", m: "Đánh", e: "🏏" },
                     { w: "Big", m: "To lớn", e: "🐘" },
                     { w: "Dig", m: "Đào đất", e: "⛏️" },
-                    { w: "Fox", m: "Con cáo", e: "🦊" },
-                    { w: "Box", m: "Cái hộp", e: "📦" }
+                    { w: "Fox", m: "Con cáo", e: "🦊" }
                 ],
                 sentences: [
+                    // Grammar - Prepositions
                     { q: "The scissors are ____ the box.", a: "in", w: ["on", "under"], e: "📦✂️", audio: "The scissors are in the box." },
                     { q: "Where are the ____?", a: "stickers", w: ["sticker", "stick"], e: "🌟❓", audio: "Where are the stickers?" },
                     { q: "The paints are ____ the box.", a: "in", w: ["under", "on"], e: "🎨📦", audio: "The paints are in the box." },
                     { q: "The rulers are ____ the table.", a: "under", w: ["in", "on"], e: "📏⬇️", audio: "The rulers are under the table." },
-                    { q: "How do you ____ fox?", a: "spell", w: ["draw", "say"], e: "🗣️", audio: "How do you spell fox?" },
-                    { q: "What's your favorite ____?", a: "class", w: ["food", "color"], e: "🏫", audio: "What's your favorite class?" },
+                    // Do it! (Drawing Commands - Page 53)
                     { q: "Draw a ____ and a body.", a: "head", w: ["leg", "tail"], e: "👤", audio: "Draw a head and a body." },
                     { q: "Draw 2 ____ and a nose.", a: "eyes", w: ["ears", "legs"], e: "👀", audio: "Draw 2 eyes and a nose." },
-                    { q: "____ the picture.", a: "Color", w: ["Draw", "Spell"], e: "🖍️", audio: "Color the picture." }
+                    { q: "____ the picture.", a: "Color", w: ["Draw", "Spell"], e: "🖍️", audio: "Color the picture." },
+                    { q: "Write ____ under the picture.", a: "fox", w: ["box", "six"], e: "✍️🦊", audio: "Write fox under the picture." }
                 ]
             }
         };
@@ -245,11 +248,10 @@
         var qIndex = 0;
         var totalQ = 20;
         
-        // Quản lý game xếp chữ
         var spellingState = {
             target: "",
             current: [],
-            letterPool: [] // Chứa danh sách các nút chữ cái và trạng thái
+            letterPool: []
         };
 
         // --- 2. ENGINE TẠO CÂU HỎI ---
@@ -257,21 +259,26 @@
             var data = rawData[unitKey];
             var pool = [];
 
-            // Từ vựng: Đọc chậm (rate thấp)
+            // Từ vựng (Vocabulary)
             data.vocab.forEach(function(item) {
+                // Dạng 1: Nhìn hình chọn chữ
                 pool.push({ type: "mcq", q: "Cái này tiếng Anh là gì?", sub: item.e, a: item.w, wrong: getWrongs(item.w, data.vocab, "w"), audio: item.w, isSentence: false });
+                
+                // Dạng 2: Nghe chọn nghĩa Tiếng Việt
                 pool.push({ type: "mcq", q: "Nghe và chọn nghĩa đúng:", sub: "🔊", a: item.m, wrong: getWrongs(item.m, data.vocab, "m"), audio: item.w, isSentence: false });
                 
-                if (item.w.length <= 8 && item.w.indexOf(" ") === -1) {
+                // Dạng 3: Xếp chữ (Chỉ từ nào ngắn <= 10 ký tự và không có dấu cách)
+                if (item.w.length <= 10 && item.w.indexOf(" ") === -1) {
                     pool.push({ type: "spell", q: "Sắp xếp các chữ cái:", sub: item.e, a: item.w, audio: item.w, isSentence: false });
                 }
             });
 
-            // Mẫu câu: Đọc nhanh hơn 1 chút cho tự nhiên
+            // Mẫu câu (Sentences)
             data.sentences.forEach(function(item) {
                 pool.push({ type: "mcq", q: item.q, sub: item.e, a: item.a, wrong: item.w, audio: item.audio, isSentence: true });
             });
 
+            // Trộn và lấy 20 câu
             pool.sort(function() { return 0.5 - Math.random() });
             return pool.slice(0, totalQ);
         }
@@ -279,6 +286,7 @@
         function getWrongs(correct, sourceList, field) {
             var res = [];
             var attempts = 0;
+            // Gom toàn bộ từ vựng 2 bài để làm nhiễu
             var allVocab = rawData.unit6.vocab.concat(rawData.unit7.vocab);
             
             while (res.length < 2 && attempts < 50) {
@@ -288,7 +296,7 @@
                 }
                 attempts++;
             }
-            if (res.length < 2) res.push("Apple");
+            if (res.length < 2) res.push("Blue");
             if (res.length < 2) res.push("Banana");
             return res;
         }
@@ -324,7 +332,6 @@
             spellingBoard.innerHTML = "";
             spellingBoard.classList.add('hidden');
 
-            // Đọc câu hỏi
             playCurrentAudio();
 
             if (currentQ.type === "mcq") {
@@ -343,7 +350,7 @@
             }
         }
 
-        // --- LOGIC XẾP CHỮ MỚI (UNDO ĐƯỢC) ---
+        // --- LOGIC XẾP CHỮ (CÓ UNDO) ---
         function setupSpellingGame(word) {
             var spellingBoard = document.getElementById('spelling-board');
             var optionsArea = document.getElementById('options-area');
@@ -353,22 +360,21 @@
             spellingState.current = new Array(word.length).fill(null);
             spellingState.letterPool = [];
 
-            // 1. Tạo ô trống (Slots)
+            // Tạo ô trống
             for(var i=0; i<word.length; i++) {
                 var slot = document.createElement('div');
                 slot.className = 'spelling-slot';
                 slot.id = 'slot-' + i;
                 slot.innerText = "";
-                // Bấm vào ô trống để trả chữ về
+                // Click vào ô để trả chữ về
                 slot.onclick = (function(index) {
                     return function() { handleSlotClick(index); }
                 })(i);
                 spellingBoard.appendChild(slot);
             }
 
-            // 2. Tạo nút chữ cái (Buttons)
+            // Tạo nút chữ cái
             var letters = word.toUpperCase().split('');
-            // Map thêm ID để phân biệt các chữ giống nhau (VD: 2 chữ E trong BEE)
             var letterObjs = letters.map(function(char, index) {
                 return { char: char, id: index };
             });
@@ -382,25 +388,19 @@
                 btn.className = 'btn-letter visible';
                 btn.innerText = item.char;
                 btn.id = 'btn-letter-' + item.id;
-                
                 btn.onclick = function() { handleLetterClick(item, btn); };
-                
                 letterContainer.appendChild(btn);
-                spellingState.letterPool.push(item);
             });
             optionsArea.appendChild(letterContainer);
         }
 
         function handleLetterClick(item, btnElem) {
-            // Tìm ô trống đầu tiên
             var emptyIndex = spellingState.current.indexOf(null);
-            if (emptyIndex === -1) return; // Đã đầy
+            if (emptyIndex === -1) return;
 
-            // Điền vào ô
-            spellingState.current[emptyIndex] = item; // Lưu cả object {char, id}
+            spellingState.current[emptyIndex] = item;
             document.getElementById('slot-' + emptyIndex).innerText = item.char;
             
-            // Ẩn nút vừa bấm
             btnElem.classList.remove('visible');
             btnElem.classList.add('used');
 
@@ -409,13 +409,11 @@
 
         function handleSlotClick(slotIndex) {
             var item = spellingState.current[slotIndex];
-            if (!item) return; // Ô đang trống thì không làm gì
+            if (!item) return;
 
-            // 1. Xóa nội dung ô
             spellingState.current[slotIndex] = null;
             document.getElementById('slot-' + slotIndex).innerText = "";
 
-            // 2. Hiện lại nút tương ứng
             var btn = document.getElementById('btn-letter-' + item.id);
             if (btn) {
                 btn.classList.remove('used');
@@ -424,47 +422,37 @@
         }
 
         function checkSpelling() {
-            // Kiểm tra xem đã điền hết chưa
             if (spellingState.current.indexOf(null) !== -1) return;
-
-            // Ghép lại thành từ
             var formedWord = spellingState.current.map(function(i) { return i.char }).join('');
             
             if (formedWord === spellingState.target) {
                 correctFeedback();
             } else {
                 wrongFeedback();
-                // Tự động reset sau 1.5s nếu sai
                 setTimeout(function() {
-                    // Reset toàn bộ
                     for(var i=0; i<spellingState.current.length; i++) {
-                        handleSlotClick(i); // Trả hết chữ về
+                        handleSlotClick(i);
                     }
                 }, 1500);
             }
         }
 
-        // --- HÀM XỬ LÝ ÂM THANH NÂNG CAO ---
+        // --- HÀM ÂM THANH (QUAN TRỌNG) ---
         function speak(text, lang, fixedRate) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 var u = new SpeechSynthesisUtterance(text);
                 
-                if (lang === 'vi-VN') {
-                    // Cố gắng ép giọng Tiếng Việt
-                    u.lang = 'vi-VN'; 
-                    u.rate = 1.0; 
+                u.lang = 'en-US'; // Luôn dùng voice tiếng Anh để đọc cho chuẩn
+                
+                if (fixedRate) {
+                    u.rate = fixedRate;
                 } else {
-                    u.lang = 'en-US';
-                    if (fixedRate) {
-                        u.rate = fixedRate; // Dùng tốc độ cố định nếu có
-                    } else {
-                        // Nếu là câu dài (isSentence = true) thì đọc nhanh hơn xíu cho tự nhiên (0.7)
-                        // Nếu là từ đơn thì đọc chậm (0.5)
-                        var isSentence = currentQ ? currentQ.isSentence : false;
-                        u.rate = isSentence ? 0.7 : 0.5; 
-                    }
+                    // Logic tự động: Từ đơn đọc chậm (0.5), Câu dài đọc nhanh hơn (0.7)
+                    var isSentence = currentQ ? currentQ.isSentence : false;
+                    u.rate = isSentence ? 0.7 : 0.5; 
                 }
+                
                 window.speechSynthesis.speak(u);
             }
         }
@@ -484,15 +472,14 @@
         function correctFeedback() {
             var fb = document.getElementById('feedback');
             fb.innerHTML = '<span class="correct">Đúng rồi! Giỏi lắm Thanh Vân ơi! 🌟</span>';
-            // Chuyển giọng đọc sang Tiếng Anh (tốc độ 0.8 cho hào hứng)
-            speak("Good job Thanh Van!", "en-US", 0.8);
+            // Động viên bằng tiếng Anh, giọng hào hứng
+            speak("Good job Thanh Van!", "en-US", 0.9); 
             setTimeout(nextQuestion, 2000);
         }
 
         function wrongFeedback() {
             var fb = document.getElementById('feedback');
             fb.innerHTML = '<span class="wrong">Sai rồi, Thanh Vân thử lại nhé! 😅</span>';
-            // Chuyển giọng đọc sang Tiếng Anh
             speak("Try again!", "en-US", 0.8);
         }
 
@@ -504,7 +491,7 @@
                 '<p>Con đã làm rất tốt.</p>' +
                 '<button class="btn btn-home" onclick="location.reload()">Chơi lại nhé</button>' +
                 '</div>';
-            speak("Congratulations Thanh Van! You did a good job!", "en-US", 0.8);
+            speak("Congratulations Thanh Van! You did a good job!", "en-US", 0.9);
         }
 
         function goHome() {
