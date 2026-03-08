@@ -3,111 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hành Trình Tiếng Anh Toàn Diện</title>
+    <title>Thanh Vân Học Tiếng Anh Cùng Ba Hiệp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
-        body { font-family: 'Nunito', sans-serif; background-color: #f0fdf4; }
-        .game-card { background: white; border-radius: 20px; box-shadow: 0 10px 0 #dcfce7, 0 10px 20px rgba(0,0,0,0.1); }
-        .btn-3d { transition: all 0.1s; border-bottom: 5px solid rgba(0,0,0,0.2); position: relative; }
+        body { font-family: 'Nunito', sans-serif; background-color: #fffaf0; }
+        .game-card { background: white; border-radius: 24px; box-shadow: 0 12px 0 #fed7aa, 0 10px 20px rgba(0,0,0,0.1); }
+        .btn-3d { transition: all 0.1s; border-bottom: 6px solid rgba(0,0,0,0.2); }
         .btn-3d:active { transform: translateY(4px); border-bottom: 0px solid rgba(0,0,0,0.2); }
-        .emoji-img { font-size: 4.5rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .emoji-img { font-size: 5rem; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.15)); }
         .hidden { display: none !important; }
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .animate-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
+        .animate-bounce-in { animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 select-none">
 
-    <div id="start-screen" class="max-w-md w-full text-center animate-pop">
-        <div class="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200">
-            <h1 class="text-4xl font-black text-green-600 mb-2">SIÊU TRÍ TUỆ</h1>
-            <p class="text-gray-500 text-lg mb-6">Tổng hợp: Nhà - Trường - Cảm xúc</p>
-            <div class="flex justify-center gap-4 mb-8 text-5xl">
-                <span>🏠</span><span>🥋</span><span>⛈️</span><span>🍱</span>
+    <div id="start-screen" class="max-w-md w-full text-center animate-bounce-in">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl border-b-8 border-orange-200">
+            <h1 class="text-4xl font-black text-orange-600 mb-2">THANH VÂN ƠI!</h1>
+            <p class="text-gray-600 text-xl mb-8 font-bold">Ba Hiệp chúc con học tốt nhé! ❤️</p>
+            <div class="grid grid-cols-2 gap-4 mb-10 text-5xl">
+                <span class="animate-bounce" style="animation-delay: 0.1s">🍣</span>
+                <span class="animate-bounce" style="animation-delay: 0.3s">🥋</span>
+                <span class="animate-bounce" style="animation-delay: 0.5s">🎨</span>
+                <span class="animate-bounce" style="animation-delay: 0.7s">🌬️</span>
             </div>
-            <button onclick="startGame()" class="btn-3d w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl text-2xl shadow-lg">
-                BẮT ĐẦU HỌC! 🚀
+            <button onclick="startGame()" class="btn-3d w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-5 rounded-2xl text-3xl shadow-xl">
+                BẮT ĐẦU CHƠI! 🚀
             </button>
         </div>
     </div>
 
     <div id="game-screen" class="hidden max-w-lg w-full">
-        <div class="flex justify-between items-center mb-6">
-            <div class="w-full bg-gray-200 rounded-full h-4 mr-4 border-2 border-white shadow-sm overflow-hidden">
-                <div id="progress-bar" class="bg-yellow-400 h-full transition-all duration-500" style="width: 0%"></div>
+        <div class="flex justify-between items-center mb-6 px-2">
+            <div class="w-full bg-gray-200 rounded-full h-5 mr-4 border-2 border-white shadow-inner overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full transition-all duration-700" style="width: 0%"></div>
             </div>
-            <div class="bg-white px-4 py-1 rounded-xl font-black text-green-600 border-b-4 border-gray-100"><span id="score">0</span> 🏆</div>
+            <div class="bg-white px-5 py-2 rounded-2xl font-black text-orange-600 border-b-4 border-orange-100 shadow-sm">
+                <span id="score">0</span> 🏆
+            </div>
         </div>
 
-        <div class="game-card p-6 mb-6 min-h-[420px] flex flex-col justify-center relative overflow-hidden">
-            <div id="review-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10 shadow-md">ÔN TẬP</div>
-            <div id="question-count" class="absolute top-0 left-0 bg-blue-100 text-blue-600 text-xs font-bold px-3 py-1 rounded-br-xl">Câu: 1/20</div>
-            <div id="question-area" class="text-center w-full mt-4"></div>
+        <div class="game-card p-8 mb-6 min-h-[450px] flex flex-col justify-center relative overflow-hidden text-center">
+            <div id="review-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-sm font-black px-5 py-2 rounded-bl-2xl z-10 shadow-lg">ÔN TẬP CHO VÂN</div>
+            <div id="question-count" class="absolute top-0 left-0 bg-orange-100 text-orange-700 text-sm font-black px-4 py-2 rounded-br-2xl">Câu: 1/20</div>
+            <div id="question-area" class="w-full mt-6"></div>
         </div>
 
-        <div id="feedback-overlay" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div id="feedback-box" class="bg-white rounded-3xl p-8 text-center max-w-sm w-full shadow-2xl animate-pop border-b-8">
-                <div id="feedback-icon" class="text-7xl mb-4"></div>
-                <h2 id="feedback-text" class="text-3xl font-black mb-2"></h2>
-                <p id="feedback-sub" class="text-gray-700 text-xl font-bold mb-6"></p>
-                <button onclick="nextQuestion()" class="btn-3d w-full py-4 rounded-xl text-2xl font-black text-white shadow-md" id="feedback-btn">Tiếp tục</button>
+        <div id="feedback-overlay" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-6 backdrop-blur-md">
+            <div id="feedback-box" class="bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px]">
+                <div id="feedback-icon" class="text-8xl mb-6"></div>
+                <h2 id="feedback-text" class="text-4xl font-black mb-3"></h2>
+                <p id="feedback-sub" class="text-gray-700 text-xl font-bold mb-8"></p>
+                <button onclick="nextQuestion()" class="btn-3d w-full py-5 rounded-2xl text-2xl font-black text-white shadow-lg" id="feedback-btn">Tiếp tục nào!</button>
             </div>
         </div>
     </div>
 
-    <div id="end-screen" class="hidden max-w-md w-full text-center animate-pop">
-        <div class="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-purple-200">
-            <h1 class="text-4xl font-black text-purple-600 mb-4">XUẤT SẮC! 🎉</h1>
-            <div class="text-7xl mb-6">🏆</div>
-            <p id="final-score-text" class="text-gray-600 text-xl mb-8 font-bold"></p>
-            <button onclick="location.reload()" class="btn-3d w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-2xl shadow-lg">CHƠI LẠI 🔄</button>
+    <div id="end-screen" class="hidden max-w-md w-full text-center animate-bounce-in">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl border-b-8 border-purple-200">
+            <h1 class="text-5xl font-black text-purple-600 mb-4 text-center">GIỎI QUÁ!</h1>
+            <div class="text-9xl mb-8">🥇</div>
+            <p id="final-score-text" class="text-gray-700 text-2xl mb-10 font-black"></p>
+            <button onclick="location.reload()" class="btn-3d w-full bg-green-500 hover:bg-green-600 text-white font-black py-5 rounded-2xl text-2xl shadow-xl">CHƠI LẠI VỚI BA 🔄</button>
         </div>
     </div>
 
     <script>
-        // KHO DỮ LIỆU TỔNG HỢP TỪ 2 FILE PDF
+        // KHO CÂU HỎI TỔNG HỢP (50 CÂU)
         const fullBank = [
-            // UNIT 1: FEELINGS
+            // CẢM XÚC & CƠ THỂ
             { type: 'match', q: 'Happy', a: '😊', options: ['😊', '😢', '😡', '😴'], sound: 'Happy' },
             { type: 'match', q: 'Sad', a: '😢', options: ['😊', '😢', '😡', '😴'], sound: 'Sad' },
-            { type: 'quiz', q: 'Cảm giác sợ hãi là?', img: '😨', a: 'Scared', options: ['Happy', 'Angry', 'Scared', 'Sleepy'], sound: 'Scared' },
-            { type: 'tf', q: 'Angry', img: '😡', a: true, sound: 'Angry' },
-            { type: 'tf', q: 'Thirsty (Khát)', img: '🍔', a: false, sound: 'Thirsty' },
-            { type: 'scramble', q: 'Bạn có sợ không?', a: "Are you scared?", parts: ["Are", "you", "scared?"], sound: "Are you scared?" },
+            { type: 'quiz', q: 'Thanh Vân ơi, sợ hãi tiếng Anh là gì?', img: '😨', a: 'Scared', options: ['Happy', 'Angry', 'Scared', 'Sleepy'], sound: 'Scared' },
+            { type: 'tf', q: 'Sleepy (Buồn ngủ)', img: '😴', a: true, sound: 'Sleepy' },
+            { type: 'tf', q: 'Thirsty (Khát nước)', img: '🍕', a: false, sound: 'Thirsty' },
+            { type: 'scramble', q: 'Con có đói không?', a: "Are you hungry?", parts: ["Are", "you", "hungry?"], sound: "Are you hungry?" },
 
-            // UNIT 2: OUR HOUSE
-            { type: 'quiz', q: 'Nơi nào để nấu ăn?', img: '🍳', a: 'Kitchen', options: ['Kitchen', 'Bedroom', 'Yard', 'Hall'], sound: 'Kitchen' },
+            // NHÀ CỬA & VIỆC NHÀ
+            { type: 'quiz', q: 'Phòng ngủ của Thanh Vân là?', img: '🛌', a: 'Bedroom', options: ['Kitchen', 'Bedroom', 'Yard', 'Hall'], sound: 'Bedroom' },
+            { type: 'match', q: 'Kitchen', a: '🍳', options: ['🚿', '🍳', '🛋️', '🌳'], sound: 'Kitchen' },
             { type: 'match', q: 'Bathroom', a: '🚿', options: ['🚿', '🛌', '🛋️', '🌳'], sound: 'Bathroom' },
-            { type: 'match', q: 'Yard (Sân)', a: '🌳', options: ['🚿', '🛌', '🛋️', '🌳'], sound: 'Yard' },
-            { type: 'tf', q: 'Dining room', img: '🍽️', a: true, sound: 'Dining room' },
-            { type: 'scramble', q: 'Joey đang ở trong phòng tắm.', a: "Joey is in the bathroom", parts: ["Joey", "is", "in", "the", "bathroom"], sound: "Joey is in the bathroom" },
-            { type: 'quiz', q: 'Việc nhà: Rửa bát là?', img: '🥣', a: 'Wash the dishes', options: ['Wash the dishes', 'Make the bed', 'Rake the leaves', 'Wipe the table'], sound: 'Wash the dishes' },
+            { type: 'scramble', q: 'Dọn dẹp giường ngủ.', a: "Make the bed", parts: ["Make", "the", "bed"], sound: "Make the bed" },
+            { type: 'quiz', q: 'Hút bụi thảm là?', img: '🧹', a: 'Vacuum the carpet', options: ['Wash dishes', 'Vacuum the carpet', 'Rake leaves', 'Wipe table'], sound: 'Vacuum the carpet' },
 
-            // UNIT 3: WEATHER
-            { type: 'match', q: 'Snowy', a: '❄️', options: ['☀️', '🌧️', '❄️', '🌬️'], sound: 'Snowy' },
-            { type: 'quiz', q: 'Thời tiết có nhiều sương mù?', img: '🌫️', a: 'Foggy', options: ['Sunny', 'Foggy', 'Windy', 'Rainy'], sound: 'Foggy' },
-            { type: 'tf', q: 'Windy (Có gió)', img: '🌬️', a: true, sound: 'Windy' },
-            { type: 'scramble', q: 'Thời tiết như thế nào?', a: "What's the weather like?", parts: ["What's", "the", "weather", "like?"], sound: "What's the weather like?" },
+            // THỜI TIẾT
+            { type: 'match', q: 'Sunny (Nắng)', a: '☀️', options: ['☀️', '🌧️', '❄️', '🌬️'], sound: 'Sunny' },
+            { type: 'quiz', q: 'Trời có nhiều sương mù?', img: '🌫️', a: 'Foggy', options: ['Sunny', 'Foggy', 'Windy', 'Rainy'], sound: 'Foggy' },
+            { type: 'tf', q: 'Rainy (Mưa)', img: '🌧️', a: true, sound: 'Rainy' },
+            { type: 'scramble', q: 'Hôm nay trời thế nào?', a: "What's the weather like?", parts: ["What's", "the", "weather", "like?"], sound: "What's the weather like?" },
 
-            // UNIT: SCHOOL & CLASSES
-            { type: 'match', q: 'Math class', a: '📐', options: ['🎨', '📐', '⚽', '🏊'], sound: 'Math class' },
-            { type: 'match', q: 'Judo practice', a: '🥋', options: ['🥋', '⚾', '💃', '🖌️'], sound: 'Judo practice' },
-            { type: 'quiz', q: 'Lớp học bơi là gì?', img: '🏊', a: 'Swimming class', options: ['Math class', 'Swimming class', 'Art class', 'Dance class'], sound: 'Swimming class' },
-            { type: 'scramble', q: 'Cái kéo ở trong hộp.', a: "The scissors are in the box", parts: ["The", "scissors", "are", "in", "the", "box"], sound: "The scissors are in the box" },
+            // TRƯỜNG HỌC & LỚP HỌC
+            { type: 'match', q: 'Art class', a: '🎨', options: ['🎨', '📐', '⚽', '🏊'], sound: 'Art class' },
+            { type: 'quiz', q: 'Thanh Vân học viết thư pháp?', img: '🖌️', a: 'Calligraphy class', options: ['Math', 'Judo', 'Calligraphy', 'Art'], sound: 'Calligraphy class' },
+            { type: 'tf', q: 'Judo practice', img: '🥋', a: true, sound: 'Judo practice' },
+            { type: 'scramble', q: 'Thanh Vân đang đi tập múa.', a: "Going to dance class", parts: ["Going", "to", "dance", "class"], sound: "Going to dance class" },
 
-            // UNIT: EATING OUT & FOODS
+            // ĂN UỐNG & QUỐC TẾ
+            { type: 'match', q: 'Spaghetti (Ý)', a: '🍝', options: ['🍣', '🍝', '🌮', '🌭'], sound: 'Spaghetti' },
             { type: 'match', q: 'Sushi (Japan)', a: '🍣', options: ['🍣', '🥟', '🌮', '🌭'], sound: 'Sushi' },
-            { type: 'match', q: 'Tacos (Mexico)', a: '🌮', options: ['🍔', '🌮', '🥣', '🥗'], sound: 'Tacos' },
-            { type: 'quiz', q: 'Món Kimchi của nước nào?', img: '🥬', a: 'Korea', options: ['China', 'Japan', 'Korea', 'Mexico'], sound: 'Korea' },
-            { type: 'scramble', q: 'Bạn có biết dùng đũa không?', a: "Can you use chopsticks?", parts: ["Can", "you", "use", "chopsticks?"], sound: "Can you use chopsticks?" },
-            { type: 'quiz', q: 'Tôi muốn ăn mì.', a: 'I want noodles', options: ['I want noodles', 'I want soup', 'I want fish', 'I want fruit'], sound: 'I want noodles' },
+            { type: 'quiz', q: 'Món bánh Tacos của nước nào?', img: '🌮', a: 'Mexico', options: ['China', 'Japan', 'Korea', 'Mexico'], sound: 'Mexico' },
+            { type: 'scramble', q: 'Con muốn ăn mì.', a: "I want noodles", parts: ["I", "want", "noodles"], sound: "I want noodles" },
+            { type: 'quiz', q: 'Con có biết dùng đũa không?', a: 'Can you use chopsticks?', options: ['use chopsticks?', 'eat fruit?', 'drink juice?', 'want fish?'], sound: 'Can you use chopsticks?' },
             
-            // PHONICS
-            { type: 'quiz', q: 'Đánh vần từ "Cái hộp" (Box)?', img: '📦', a: 'b-o-x', options: ['f-o-x', 'b-o-x', 'c-a-t', 'b-i-g'], sound: 'box' },
-            { type: 'tf', q: 'Bell (Quả chuông có vần -ell)', img: '🔔', a: true, sound: 'Bell' }
+            // ĐỒ VẬT & PHONICS
+            { type: 'quiz', q: 'Cái kéo tiếng Anh là?', img: '✂️', a: 'Scissors', options: ['Paints', 'Scissors', 'Erasers', 'Markers'], sound: 'Scissors' },
+            { type: 'tf', q: 'In the box (Trong hộp)', img: '📦', a: true, sound: 'In the box' },
+            { type: 'quiz', q: 'Đánh vần từ "Con mèo" (Cat)?', img: '🐱', a: 'c-a-t', options: ['d-o-g', 'c-a-t', 'f-o-x', 'b-i-g'], sound: 'cat' },
+            { type: 'tf', q: 'Bell (Có vần -ell)', img: '🔔', a: true, sound: 'Bell' }
         ];
 
         let questions = [];
@@ -121,17 +127,17 @@
             if (synth.speaking) synth.cancel();
             const utter = new SpeechSynthesisUtterance(text);
             utter.lang = lang;
-            utter.rate = 0.9;
+            utter.rate = 0.95;
             synth.speak(utter);
         }
 
         function startGame() {
-            // Trộn và lấy ngẫu nhiên 20 câu
             const shuffled = [...fullBank].sort(() => 0.5 - Math.random());
             questions = shuffled.slice(0, 20);
             currentIdx = 0; score = 0; wrongQuestions = []; isReviewMode = false;
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
+            speak("Chào Thanh Vân, ba Hiệp cùng con học nhé!", 'vi-VN');
             renderQuestion();
         }
 
@@ -142,29 +148,29 @@
             document.getElementById('question-count').innerText = `Câu: ${currentIdx + 1}/${questions.length}`;
             document.getElementById('review-badge').classList.toggle('hidden', !isReviewMode);
 
-            if(q.sound) setTimeout(() => speak(q.sound), 500);
+            if(q.sound) setTimeout(() => speak(q.sound), 600);
 
             let html = '';
             switch(q.type) {
                 case 'match':
-                    html = `<h2 class="text-2xl font-bold mb-6 text-gray-700">Tìm hình cho từ:<br><span class="text-blue-600 text-5xl">${q.q}</span></h2>
-                            <div class="grid grid-cols-2 gap-4">${q.options.map(opt => `<button onclick="checkAnswer('${opt}', '${q.a}')" class="btn-3d bg-blue-50 p-4 emoji-img rounded-xl">${opt}</button>`).join('')}</div>`;
+                    html = `<h2 class="text-2xl font-black mb-8 text-gray-700">Tìm hình cho từ:<br><span class="text-orange-600 text-6xl mt-2 block">${q.q}</span></h2>
+                            <div class="grid grid-cols-2 gap-5">${q.options.map(opt => `<button onclick="checkAnswer('${opt}', '${q.a}')" class="btn-3d bg-orange-50 p-6 emoji-img rounded-3xl border-2 border-orange-100">${opt}</button>`).join('')}</div>`;
                     break;
                 case 'quiz':
-                    html = `<h2 class="text-2xl font-bold mb-4 text-gray-700">${q.q}</h2><div class="emoji-img mb-6 animate-bounce">${q.img || '❓'}</div>
-                            <div class="grid grid-cols-1 gap-3">${q.options.map(opt => `<button onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', '${q.a.replace(/'/g, "\\")}')" class="btn-3d bg-white border-2 border-indigo-100 font-bold py-4 rounded-xl text-xl">${opt}</button>`).join('')}</div>`;
+                    html = `<h2 class="text-3xl font-black mb-6 text-gray-700 leading-tight">${q.q}</h2><div class="emoji-img mb-8 animate-bounce">${q.img || '❓'}</div>
+                            <div class="grid grid-cols-1 gap-4">${q.options.map(opt => `<button onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', '${q.a.replace(/'/g, "\\")}')" class="btn-3d bg-white border-2 border-orange-100 font-black py-5 rounded-2xl text-2xl text-gray-700">${opt}</button>`).join('')}</div>`;
                     break;
                 case 'tf':
-                    html = `<h2 class="text-2xl font-bold mb-4 text-gray-700">Đúng hay Sai?</h2><div class="emoji-img mb-4">${q.img}</div><h3 class="text-4xl font-black text-blue-600 mb-8">${q.q}</h3>
-                            <div class="flex gap-4"><button onclick="checkAnswer('true', '${q.a}')" class="flex-1 btn-3d bg-green-500 text-white font-bold py-5 rounded-xl text-2xl">ĐÚNG</button>
-                            <button onclick="checkAnswer('false', '${q.a}')" class="flex-1 btn-3d bg-red-500 text-white font-bold py-5 rounded-xl text-2xl">SAI</button></div>`;
+                    html = `<h2 class="text-2xl font-black mb-6 text-gray-700">Thanh Vân thấy đúng hay sai?</h2><div class="emoji-img mb-6">${q.img}</div><h3 class="text-5xl font-black text-orange-600 mb-10">${q.q}</h3>
+                            <div class="flex gap-5"><button onclick="checkAnswer('true', '${q.a}')" class="flex-1 btn-3d bg-green-500 text-white font-black py-6 rounded-3xl text-3xl">ĐÚNG ✅</button>
+                            <button onclick="checkAnswer('false', '${q.a}')" class="flex-1 btn-3d bg-red-500 text-white font-black py-6 rounded-3xl text-3xl">SAI ❌</button></div>`;
                     break;
                 case 'scramble':
                     const shufParts = [...q.parts].sort(() => 0.5 - Math.random());
-                    html = `<h2 class="text-xl font-bold mb-6 text-gray-600">Sắp xếp: <span class="text-blue-600 text-2xl">${q.q}</span></h2>
-                            <div id="drop-zone" class="bg-gray-50 rounded-xl p-4 min-h-[80px] flex flex-wrap gap-2 mb-6 border-2 border-dashed border-gray-300 justify-center"></div>
-                            <div class="flex flex-wrap gap-2 justify-center">${shufParts.map(p => `<button onclick="selectWord(this)" class="btn-3d bg-yellow-100 px-4 py-2 rounded-lg font-bold text-xl">${p}</button>`).join('')}</div>
-                            <div class="mt-8"><button onclick="checkScramble('${q.a.replace(/'/g, "\\'")}')" class="btn-3d bg-blue-500 text-white px-8 py-3 rounded-full text-2xl">Kiểm tra</button></div>`;
+                    html = `<h2 class="text-2xl font-black mb-8 text-gray-600">Sắp xếp cho ba:<br><span class="text-orange-600 text-3xl">"${q.q}"</span></h2>
+                            <div id="drop-zone" class="bg-orange-50 rounded-3xl p-6 min-h-[100px] flex flex-wrap gap-3 mb-8 border-2 border-dashed border-orange-200 justify-center items-center"></div>
+                            <div class="flex flex-wrap gap-3 justify-center">${shufParts.map(p => `<button onclick="selectWord(this)" class="btn-3d bg-yellow-100 px-6 py-3 rounded-xl font-black text-2xl text-orange-800">${p}</button>`).join('')}</div>
+                            <div class="mt-10"><button onclick="checkScramble('${q.a.replace(/'/g, "\\'")}')" class="btn-3d bg-orange-500 text-white px-12 py-4 rounded-full font-black text-3xl shadow-lg">Kiểm tra nào!</button></div>`;
                     break;
             }
             area.innerHTML = html;
@@ -175,7 +181,7 @@
             currentSentence.push(btn.innerText);
             btn.classList.add('opacity-0', 'pointer-events-none');
             const span = document.createElement('span');
-            span.className = "bg-white border-2 border-blue-200 px-3 py-2 rounded-lg font-bold text-blue-800 animate-pop";
+            span.className = "bg-white border-2 border-orange-200 px-4 py-2 rounded-xl font-black text-orange-700 animate-bounce-in text-2xl";
             span.innerText = btn.innerText;
             document.getElementById('drop-zone').appendChild(span);
         }
@@ -192,41 +198,57 @@
             const overlay = document.getElementById('feedback-overlay');
             overlay.classList.remove('hidden');
             
+            const praiseVân = [
+                "Thanh Vân giỏi quá xá!",
+                "Hoan hô Thanh Vân của ba!",
+                "Thanh Vân làm ba tự hào quá!",
+                "Đúng rồi, Thanh Vân tuyệt vời!",
+                "Thanh Vân xuất sắc quá con ơi!"
+            ];
+            
+            const remindVân = [
+                "Thanh Vân cố lên, sắp đúng rồi!",
+                "Không sao đâu Thanh Vân, thử lại nhé!",
+                "Ba tin Thanh Vân sẽ làm được câu này!",
+                "Tiếc quá Thanh Vân ơi, tập trung xíu nữa nhé!",
+                "Thanh Vân ơi, con làm lại câu này cho nhớ nhé!"
+            ];
+
             if (isCorrect) {
                 score += 10;
                 document.getElementById('score').innerText = score;
-                document.getElementById('feedback-box').className = "bg-white rounded-3xl p-8 text-center max-w-sm w-full shadow-2xl animate-pop border-b-8 border-green-400";
-                document.getElementById('feedback-icon').innerHTML = "🎉";
-                document.getElementById('feedback-text').innerText = "Tuyệt vời!";
-                document.getElementById('feedback-btn').className = "btn-3d w-full py-4 rounded-xl text-2xl bg-green-500 text-white";
-                speak("Bé giỏi quá, đúng rồi!", 'vi-VN');
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                document.getElementById('feedback-box').className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px] border-green-400";
+                document.getElementById('feedback-icon').innerHTML = "🌟";
+                document.getElementById('feedback-text').innerText = "TUYỆT VỜI!";
+                document.getElementById('feedback-sub').innerText = "Thanh Vân làm đúng rồi đó!";
+                document.getElementById('feedback-btn').className = "btn-3d w-full py-5 rounded-2xl text-2xl font-black bg-green-500 text-white";
+                speak(praiseVân[Math.floor(Math.random()*praiseVân.length)], 'vi-VN');
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
             } else {
                 if(!isReviewMode) wrongQuestions.push(questions[currentIdx]);
-                document.getElementById('feedback-box').className = "bg-white rounded-3xl p-8 text-center max-w-sm w-full shadow-2xl animate-pop border-b-8 border-red-400";
-                document.getElementById('feedback-icon').innerHTML = "😅";
-                document.getElementById('feedback-text').innerText = "Tiếc quá!";
-                document.getElementById('feedback-sub').innerText = `Đáp án đúng: ${correct}`;
-                document.getElementById('feedback-btn').className = "btn-3d w-full py-4 rounded-xl text-2xl bg-red-500 text-white";
-                speak("Không sao, thử lại nhé!", 'vi-VN');
+                document.getElementById('feedback-box').className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px] border-red-400";
+                document.getElementById('feedback-icon').innerHTML = "💪";
+                document.getElementById('feedback-text').innerText = "CỐ LÊN CON!";
+                document.getElementById('feedback-sub').innerText = `Đáp án là: ${correct}`;
+                document.getElementById('feedback-btn').className = "btn-3d w-full py-5 rounded-2xl text-2xl font-black bg-red-500 text-white";
+                speak(remindVân[Math.floor(Math.random()*remindVân.length)], 'vi-VN');
             }
         }
 
         function nextQuestion() {
             document.getElementById('feedback-overlay').classList.add('hidden');
-            document.getElementById('feedback-sub').innerText = '';
             currentIdx++;
             if (currentIdx < questions.length) {
                 renderQuestion();
             } else if (wrongQuestions.length > 0 && !isReviewMode) {
                 isReviewMode = true; questions = [...wrongQuestions]; wrongQuestions = []; currentIdx = 0;
-                speak("Cùng ôn tập những câu chưa đúng nhé!", 'vi-VN');
+                speak("Bây giờ Thanh Vân cùng ba ôn lại những câu chưa đúng nhé!", 'vi-VN');
                 renderQuestion();
             } else {
                 document.getElementById('game-screen').classList.add('hidden');
                 document.getElementById('end-screen').classList.remove('hidden');
-                document.getElementById('final-score-text').innerText = `Bé đã đạt được ${score} điểm!`;
-                speak("Chúc mừng bé đã hoàn thành bài học!", 'vi-VN');
+                document.getElementById('final-score-text').innerText = `Thanh Vân đã đạt được ${score} điểm! Ba yêu con!`;
+                speak("Chúc mừng Thanh Vân đã hoàn thành bài học hôm nay. Ba yêu con rất nhiều!", 'vi-VN');
             }
         }
     </script>
