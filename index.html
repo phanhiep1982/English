@@ -4,8 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thanh Vân Học Tiếng Anh Cùng Ba Hiệp</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></// --- HỆ THỐNG GIỌNG NÓI TỐI ƯU CHO IPAD ---
+const synth = window.speechSynthesis;
+let vnVoice = null;
+let enVoice = null;
+
+// Hàm tìm giọng đọc tốt nhất trên thiết bị
+function loadVoices() {
+    const voices = synth.getVoices();
+    
+    // Tìm giọng Việt: Ưu tiên giọng "Siri" hoặc "Premium" trên iOS
+    vnVoice = voices.find(v => v.lang.includes('vi') && v.name.includes('Premium')) || 
+              voices.find(v => v.lang.includes('vi')) || 
+              voices[0];
+
+    // Tìm giọng Anh: Ưu tiên giọng nữ Mỹ (Samantha hoặc Siri)
+    enVoice = voices.find(v => v.lang.includes('en-US') && v.name.includes('Siri')) || 
+              voices.find(v => v.lang.includes('en-US')) || 
+              voices[0];
+}
+
+// Đợi thiết bị nạp giọng nói (iOS cần bước này)
+if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
+}
+loadVoices();
+
+function speak(text, lang = 'en-US') {
+    if (synth.speaking) synth.cancel(); // Ngắt câu cũ để đọc câu mới ngay lập tức
+
+    const utter = new SpeechSynthesisUtterance(text);
+    
+    if (lang === 'vi-VN') {
+        utter.voice = vnVoice;
+        utter.rate = 0.85; // Đọc chậm lại xíu cho tình cảm
+        utter.pitch = 1.1; // Tăng tông lên một chút cho trong trẻo
+    } else {
+        utter.voice = enVoice;
+        utter.rate = 0.9;
+        utter.pitch = 1.0;
+    }
+
+    // Thủ thuật nhỏ cho iOS: Đôi khi cần kích hoạt lại sau khi đọc xong
+    utter.onend = function() { synth.cancel(); };
+
+    synth.speak(utter);
+}
+
+// --- CÁC CÂU KHEN NGỢI DÀNH RIÊNG CHO THANH VÂN ---
+function khenThanhVan() {
+    const loiKhen = [
+        "Thanh Vân xuất sắc quá con ơi!",
+        "Ba Hiệp rất tự hào về Thanh Vân!",
+        "Con gái của ba giỏi quá xá!",
+        "Đúng rồi! Thanh Vân của ba thật là thông minh!",
+        "Tuyệt vời quá Thanh Vân ơi!"
+    ];
+    speak(loiKhen[Math.floor(Math.random() * loiKhen.length)], 'vi-VN');
+}
+
+function nhacNhoThanhVan(correct) {
+    speak(`Thanh Vân ơi, con làm lại câu này cho nhớ nhé! Đáp án đúng là ${correct}`, 'vi-VN');
+}>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></// --- HỆ THỐNG GIỌNG NÓI TỐI ƯU CHO IPAD ---
+const synth = window.speechSynthesis;
+let vnVoice = null;
+let enVoice = null;
+
+// Hàm tìm giọng đọc tốt nhất trên thiết bị
+function loadVoices() {
+    const voices = synth.getVoices();
+    
+    // Tìm giọng Việt: Ưu tiên giọng "Siri" hoặc "Premium" trên iOS
+    vnVoice = voices.find(v => v.lang.includes('vi') && v.name.includes('Premium')) || 
+              voices.find(v => v.lang.includes('vi')) || 
+              voices[0];
+
+    // Tìm giọng Anh: Ưu tiên giọng nữ Mỹ (Samantha hoặc Siri)
+    enVoice = voices.find(v => v.lang.includes('en-US') && v.name.includes('Siri')) || 
+              voices.find(v => v.lang.includes('en-US')) || 
+              voices[0];
+}
+
+// Đợi thiết bị nạp giọng nói (iOS cần bước này)
+if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
+}
+loadVoices();
+
+function speak(text, lang = 'en-US') {
+    if (synth.speaking) synth.cancel(); // Ngắt câu cũ để đọc câu mới ngay lập tức
+
+    const utter = new SpeechSynthesisUtterance(text);
+    
+    if (lang === 'vi-VN') {
+        utter.voice = vnVoice;
+        utter.rate = 0.85; // Đọc chậm lại xíu cho tình cảm
+        utter.pitch = 1.1; // Tăng tông lên một chút cho trong trẻo
+    } else {
+        utter.voice = enVoice;
+        utter.rate = 0.9;
+        utter.pitch = 1.0;
+    }
+
+    // Thủ thuật nhỏ cho iOS: Đôi khi cần kích hoạt lại sau khi đọc xong
+    utter.onend = function() { synth.cancel(); };
+
+    synth.speak(utter);
+}
+
+// --- CÁC CÂU KHEN NGỢI DÀNH RIÊNG CHO THANH VÂN ---
+function khenThanhVan() {
+    const loiKhen = [
+        "Thanh Vân xuất sắc quá con ơi!",
+        "Ba Hiệp rất tự hào về Thanh Vân!",
+        "Con gái của ba giỏi quá xá!",
+        "Đúng rồi! Thanh Vân của ba thật là thông minh!",
+        "Tuyệt vời quá Thanh Vân ơi!"
+    ];
+    speak(loiKhen[Math.floor(Math.random() * loiKhen.length)], 'vi-VN');
+}
+
+function nhacNhoThanhVan(correct) {
+    speak(`Thanh Vân ơi, con làm lại câu này cho nhớ nhé! Đáp án đúng là ${correct}`, 'vi-VN');
+}>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
