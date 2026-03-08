@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Thanh Vân's Super English Game</title>
+    <title>Thanh Vân's English Adventure</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -13,7 +13,8 @@
         .game-card { background: white; border-radius: 24px; box-shadow: 0 12px 0 #fed7aa, 0 10px 20px rgba(0,0,0,0.1); }
         .btn-3d { transition: all 0.1s; border-bottom: 6px solid rgba(0,0,0,0.2); position: relative; }
         .btn-3d:active { transform: translateY(4px); border-bottom: 0px solid rgba(0,0,0,0.2); }
-        .unit-box { min-width: 45px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; border-radius: 12px; border-bottom: 5px solid #e2e8f0; cursor: pointer; padding: 0 10px; }
+        /* Ô chứa chữ cái hoặc từ vựng */
+        .unit-box { min-width: 45px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; border-radius: 12px; border-bottom: 5px solid #e2e8f0; cursor: pointer; padding: 0 12px; }
         .hidden { display: none !important; }
         @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
         .animate-bounce-in { animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -23,33 +24,36 @@
 
     <div id="start-screen" class="max-w-md w-full text-center animate-bounce-in">
         <div class="bg-white p-10 rounded-3xl shadow-2xl border-orange-200 border-b-8">
-            <h1 class="text-4xl font-black text-orange-600 mb-2">ENGLISH ADVENTURE</h1>
-            <p class="text-gray-600 text-xl mb-6 font-bold">Thanh Vân & Ba Hiệp ❤️</p>
-            <div id="priority-msg" class="hidden mb-6 p-3 bg-yellow-100 text-yellow-700 rounded-xl font-bold text-sm italic">
-                ✨ Ưu tiên các câu Thanh Vân cần luyện thêm!
+            <h1 class="text-4xl font-black text-orange-600 mb-2 uppercase">THANH VÂN</h1>
+            <p class="text-gray-600 text-xl mb-6 font-bold italic">Ready to learn with Dad Hiệp? ❤️</p>
+            <div id="priority-msg" class="hidden mb-6 p-4 bg-yellow-100 text-yellow-700 rounded-2xl font-bold text-sm animate-pulse border-2 border-yellow-200">
+                🌟 Ba sẽ cho con ôn lại các câu con làm chưa đúng nhé!
             </div>
-            <button id="start-btn" class="btn-3d w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-5 rounded-2xl text-3xl shadow-xl">START! 🚀</button>
+            <div class="grid grid-cols-2 gap-4 mb-10 text-6xl">
+                <span>🌈</span><span>🔤</span><span>🚀</span><span>✨</span>
+            </div>
+            <button id="start-btn" class="btn-3d w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-6 rounded-2xl text-3xl shadow-xl">START! 🎮</button>
         </div>
     </div>
 
     <div id="game-screen" class="hidden max-w-lg w-full">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-6 px-2">
             <div class="w-full bg-gray-200 rounded-full h-5 mr-4 border-2 border-white shadow-inner overflow-hidden">
                 <div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full transition-all duration-700" style="width: 0%"></div>
             </div>
-            <div class="bg-white px-5 py-2 rounded-2xl font-black text-orange-600 border-b-4 border-orange-100">
+            <div class="bg-white px-5 py-2 rounded-2xl font-black text-orange-600 border-b-4 border-orange-100 shadow-md">
                 <span id="score">0</span> 🏆
             </div>
         </div>
 
         <div class="game-card p-6 mb-6 min-h-[520px] flex flex-col justify-center relative overflow-hidden text-center">
-            <div id="review-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-xs font-black px-4 py-1 rounded-bl-2xl">RE-LEARN</div>
+            <div id="review-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-xs font-black px-4 py-1 rounded-bl-2xl italic">RE-LEARN</div>
             <div id="question-count" class="absolute top-0 left-0 bg-orange-100 text-orange-700 text-sm font-black px-4 py-2 rounded-br-2xl">1/20</div>
-            <div id="question-area" class="w-full"></div>
+            <div id="question-area" class="w-full mt-4"></div>
         </div>
 
         <div id="feedback-overlay" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-6 backdrop-blur-md">
-            <div id="feedback-box" class="bg-white rounded-[40px] p-10 text-center max-w-sm w-full animate-bounce-in border-b-[12px]">
+            <div id="feedback-box" class="bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px]">
                 <div id="feedback-icon" class="text-8xl mb-6"></div>
                 <h2 id="feedback-text" class="text-4xl font-black mb-3"></h2>
                 <p id="feedback-sub" class="text-gray-700 text-xl font-bold mb-8"></p>
@@ -60,51 +64,66 @@
 
     <div id="end-screen" class="hidden max-w-md w-full text-center animate-bounce-in">
         <div class="bg-white p-10 rounded-3xl shadow-2xl border-b-8 border-purple-200">
-            <h1 class="text-5xl font-black text-purple-600 mb-4 text-center">EXCELLENT!</h1>
+            <h1 class="text-5xl font-black text-purple-600 mb-4">AWESOME!</h1>
             <div class="text-9xl mb-8">🥇</div>
             <p id="final-score-text" class="text-gray-700 text-2xl mb-10 font-black"></p>
-            <button onclick="location.reload()" class="btn-3d w-full bg-green-500 text-white font-black py-5 rounded-2xl text-2xl">PLAY AGAIN 🔄</button>
+            <button onclick="location.reload()" class="btn-3d w-full bg-green-500 text-white font-black py-5 rounded-2xl text-2xl shadow-xl">PLAY AGAIN 🔄</button>
         </div>
     </div>
 
     <script src="questions.js"></script>
 
     <script>
-        let questions = [], wrongRound = [], currentIdx = 0, score = 0, isReviewMode = false;
+        let questions = [], wrongInRound = [], currentIdx = 0, score = 0, isReviewMode = false;
         const ROUND_SIZE = 20;
+
+        // --- HỆ THỐNG ÂM THANH IPAD ---
         const synth = window.speechSynthesis;
         let enVoice = null;
 
         function loadVoices() {
             const vs = synth.getVoices();
-            enVoice = vs.find(v => v.lang.includes('en-US') && v.name.includes('Siri')) || vs.find(v => v.lang.includes('en-US')) || vs[0];
+            enVoice = vs.find(v => v.lang.includes('en-US') && (v.name.includes('Siri') || v.name.includes('Samantha'))) || 
+                      vs.find(v => v.lang.includes('en-US')) || vs[0];
         }
         if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
 
-        function speak(t) { if (synth.speaking) synth.cancel(); const u = new SpeechSynthesisUtterance(t); u.voice = enVoice; u.lang = 'en-US'; u.rate = 0.85; synth.speak(u); }
+        function speak(t) { 
+            if (synth.speaking) synth.cancel(); 
+            const u = new SpeechSynthesisUtterance(t); 
+            u.voice = enVoice; u.lang = 'en-US'; u.rate = 0.85; 
+            synth.speak(u); 
+        }
 
-        function getWrongs() { return JSON.parse(localStorage.getItem('thanhVan_masterWrongs') || '[]'); }
+        // --- BỘ NHỚ THÔNG MINH (Lưu câu sai) ---
+        function getWrongs() { return JSON.parse(localStorage.getItem('thanhVan_allWrongs') || '[]'); }
         function saveWrong(q) { 
             let ws = getWrongs(); 
-            if (!ws.find(i => i.q === q.q && i.a === q.a)) { ws.push(q); localStorage.setItem('thanhVan_masterWrongs', JSON.stringify(ws)); }
+            if (!ws.find(i => i.q === q.q && i.a === q.a)) { ws.push(q); localStorage.setItem('thanhVan_allWrongs', JSON.stringify(ws)); }
         }
         function removeWrong(q) {
             let ws = getWrongs().filter(i => !(i.q === q.q && i.a === q.a));
-            localStorage.setItem('thanhVan_masterWrongs', JSON.stringify(ws));
+            localStorage.setItem('thanhVan_allWrongs', JSON.stringify(ws));
         }
 
         window.onload = () => { if(getWrongs().length > 0) document.getElementById('priority-msg').classList.remove('hidden'); };
 
         function startGame() {
+            if (typeof fullBank === 'undefined') { alert("Missing questions.js! Check your GitHub files."); return; }
+            
             const ws = getWrongs();
             let pool = [...fullBank].sort(() => 0.5 - Math.random());
-            let others = pool.filter(p => !ws.find(w => w.q === p.q));
+            let others = pool.filter(p => !ws.find(w => w.q === p.q && w.a === p.a));
+            
+            // Ưu tiên câu sai lên trước
             questions = [...ws, ...others].slice(0, ROUND_SIZE);
-            currentIdx = 0; score = 0; wrongRound = []; isReviewMode = false;
+            currentIdx = 0; score = 0; wrongInRound = []; isReviewMode = false;
+            
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            speak("Let's go, Thanh Vân!"); renderQuestion();
+            speak("Hello Thanh Vân, let's learn English with Dad Hiệp!"); 
+            renderQuestion();
         }
 
         document.getElementById('start-btn').addEventListener('click', startGame);
@@ -113,39 +132,43 @@
             const q = questions[currentIdx];
             const area = document.getElementById('question-area');
             document.getElementById('progress-bar').style.width = `${(currentIdx / questions.length) * 100}%`;
-            document.getElementById('question-count').innerText = `${currentIdx + 1}/${questions.length}`;
+            document.getElementById('question-count').innerText = `Quest: ${currentIdx + 1}/${questions.length}`;
             document.getElementById('review-badge').classList.toggle('hidden', !isReviewMode);
 
             if (q.sound) setTimeout(() => speak(q.sound), 600);
 
             let html = '';
+            // Các loại bài Trắc nghiệm/Nối hình/Đúng sai/Điền từ
             if (['match', 'quiz', 'fill', 'tf'].includes(q.type)) {
-                html = `<div class="mb-4"><span class="text-7xl">${q.img || '❓'}</span></div>
-                        <h2 class="text-2xl font-black text-gray-700 mb-8">${q.q}</h2>
+                html = `<div class="mb-4"><span class="text-8xl animate-bounce-in block">${q.img || '❓'}</span></div>
+                        <h2 class="text-2xl font-black text-gray-700 mb-8 leading-tight">${q.q}</h2>
                         <div class="grid ${q.type==='tf'?'grid-cols-2':'grid-cols-1'} gap-4">
                             ${(q.options || ['true', 'false']).map(o => `
-                                <button onclick="checkAnswer('${o}', '${q.a}')" class="btn-3d bg-white border-2 border-orange-100 font-black py-4 rounded-2xl text-xl text-gray-700 uppercase">
+                                <button onclick="checkAnswer('${o.replace(/'/g, "\\'")}', '${q.a.replace(/'/g, "\\")}')" class="btn-3d bg-white border-2 border-orange-100 font-black py-4 rounded-2xl text-xl text-gray-700 uppercase">
                                     ${o === 'true' ? 'TRUE ✅' : o === 'false' ? 'FALSE ❌' : o}
                                 </button>`).join('')}
                         </div>`;
-            } else if (['scramble', 'spell'].includes(q.type)) {
+            } 
+            // Các loại bài Xếp chữ cái (Spell) hoặc Xếp câu (Scramble)
+            else if (['scramble', 'spell'].includes(q.type)) {
                 const units = q.type === 'spell' ? q.a.toLowerCase().split('') : q.parts;
                 const shuf = [...units].sort(() => 0.5 - Math.random());
-                html = `<div class="mb-4"><span class="text-7xl">${q.img || '🔤'}</span></div>
-                        <h2 class="text-xl font-black text-gray-500 mb-4 italic">"${q.hint || q.q}"</h2>
-                        <div id="drop-zone" class="flex flex-wrap gap-2 justify-center mb-8 min-h-[70px] bg-orange-50 p-4 rounded-2xl border-2 border-dashed border-orange-200 items-center"></div>
+                html = `<div class="mb-4"><span class="text-8xl">${q.img || '🔤'}</span></div>
+                        <h2 class="text-xl font-black text-gray-400 mb-4 italic uppercase">"${q.hint || q.q}"</h2>
+                        <div id="drop-zone" class="flex flex-wrap gap-2 justify-center mb-8 min-h-[80px] bg-orange-50 p-4 rounded-2xl border-2 border-dashed border-orange-200 items-center"></div>
                         <div class="flex flex-wrap gap-2 justify-center">
-                            ${shuf.map((u, i) => `<button id="u-${i}" onclick="pickUnit(this, ${i})" class="unit-box btn-3d bg-white text-orange-600 border-orange-100">${u}</button>`).join('')}
+                            ${shuf.map((u, i) => `<button id="u-${i}" onclick="pickUnit(this, ${i})" class="unit-box btn-3d bg-white text-orange-600 border-orange-100 shadow-sm">${u}</button>`).join('')}
                         </div>
-                        <div class="mt-8"><button onclick="checkStep()" class="btn-3d bg-orange-500 text-white px-10 py-3 rounded-full font-black text-xl">Check! 🔍</button></div>`;
+                        <div class="mt-10"><button onclick="checkStepResult()" class="btn-3d bg-orange-500 text-white px-12 py-4 rounded-full font-black text-2xl shadow-lg">Check Answer! 🔍</button></div>`;
             }
             area.innerHTML = html;
         }
 
+        // Logic Rút lại từ/chữ cái (Undo)
         function pickUnit(el, idx) {
             el.style.visibility = 'hidden'; el.style.pointerEvents = 'none';
             const box = document.createElement('div');
-            box.className = "unit-box bg-orange-500 text-white border-orange-600 animate-bounce-in";
+            box.className = "unit-box bg-orange-500 text-white border-orange-600 animate-bounce-in shadow-lg";
             box.innerText = el.innerText; box.dataset.origin = `u-${idx}`;
             box.onclick = function() {
                 const o = document.getElementById(this.dataset.origin);
@@ -155,34 +178,40 @@
             document.getElementById('drop-zone').appendChild(box);
         }
 
-        function checkStep() {
-            const user = Array.from(document.getElementById('drop-zone').children).map(c => c.innerText).join(questions[currentIdx].type === 'spell' ? '' : ' ');
+        function checkStepResult() {
+            const isSpell = questions[currentIdx].type === 'spell';
+            const user = Array.from(document.getElementById('drop-zone').children).map(c => c.innerText).join(isSpell ? '' : ' ');
             checkAnswer(user, questions[currentIdx].a);
         }
 
+        // --- HÀM SO SÁNH THÔNG MINH (KHÔNG SỢ DẤU NHÁY) ---
         function checkAnswer(user, correct) {
+            // Loại bỏ dấu nháy cong/thẳng, dấu câu và khoảng trắng thừa để so sánh
             const clean = (s) => String(s).toLowerCase().replace(/['’‘´`?.,!]/g, '').trim().replace(/\s+/g, ' ');
             const isCorrect = clean(user) === clean(correct);
             const q = questions[currentIdx];
+            
             document.getElementById('feedback-overlay').classList.remove('hidden');
             const box = document.getElementById('feedback-box');
             
             if (isCorrect) {
-                score += 10; document.getElementById('score').innerText = score; removeWrong(q);
+                score += 10; document.getElementById('score').innerText = score;
+                removeWrong(q);
                 box.className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full animate-bounce-in border-b-[12px] border-green-400";
                 document.getElementById('feedback-icon').innerHTML = "🌟";
                 document.getElementById('feedback-text').innerText = "BRILLIANT!";
-                document.getElementById('feedback-sub').innerText = "Good job, Thanh Vân!";
+                document.getElementById('feedback-sub').innerText = "Correct, Thanh Vân!";
                 document.getElementById('feedback-btn').className = "btn-3d w-full py-5 rounded-2xl text-2xl font-black bg-green-500 text-white";
-                speak("Excellent, Thanh Vân!"); confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                speak(["Well done, Thanh Vân!", "Perfect!", "Thanh Vân, you are amazing!", "Superstar, Thanh Vân!"][Math.floor(Math.random()*4)]);
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             } else {
-                if(!isReviewMode) { wrongRound.push(q); saveWrong(q); }
+                if(!isReviewMode) { wrongInRound.push(q); saveWrong(q); }
                 box.className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full animate-bounce-in border-b-[12px] border-red-400";
                 document.getElementById('feedback-icon').innerHTML = "💪";
                 document.getElementById('feedback-text').innerText = "KEEP IT UP!";
                 document.getElementById('feedback-sub').innerText = `Answer: ${correct.toUpperCase()}`;
                 document.getElementById('feedback-btn').className = "btn-3d w-full py-5 rounded-2xl text-2xl font-black bg-red-500 text-white";
-                speak("You can do it, Thanh Vân!");
+                speak("Don't worry, Thanh Vân! You can do it!");
             }
         }
 
@@ -190,14 +219,14 @@
             document.getElementById('feedback-overlay').classList.add('hidden');
             currentIdx++;
             if (currentIdx < questions.length) renderQuestion();
-            else if (wrongRound.length > 0 && !isReviewMode) {
-                isReviewMode = true; questions = [...wrongRound]; wrongRound = []; currentIdx = 0;
-                speak("Review time!"); renderQuestion();
+            else if (wrongInRound.length > 0 && !isReviewMode) {
+                isReviewMode = true; questions = [...wrongInRound]; wrongInRound = []; currentIdx = 0;
+                speak("Review time for Thanh Vân!"); renderQuestion();
             } else {
                 document.getElementById('game-screen').classList.add('hidden');
                 document.getElementById('end-screen').classList.remove('hidden');
-                document.getElementById('final-score-text').innerText = `Thanh Vân got ${score} points! Dad is so proud!`;
-                speak("Congratulations, Thanh Vân!");
+                document.getElementById('final-score-text').innerText = `Thanh Vân got ${score} points! Dad is so proud of you!`;
+                speak(`Congratulations, Thanh Vân! You got ${score} points. Dad Hiệp loves you!`);
             }
         }
     </script>
