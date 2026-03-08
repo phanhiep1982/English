@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
-        body { font-family: 'Nunito', sans-serif; background-color: #fffaf0; overflow-x: hidden; }
+        body { font-family: 'Nunito', sans-serif; background-color: #fffaf0; overflow-x: hidden; touch-action: manipulation; }
         .game-card { background: white; border-radius: 24px; box-shadow: 0 12px 0 #fed7aa, 0 10px 20px rgba(0,0,0,0.1); }
         .btn-3d { transition: all 0.1s; border-bottom: 6px solid rgba(0,0,0,0.2); position: relative; }
         .btn-3d:active { transform: translateY(4px); border-bottom: 0px solid rgba(0,0,0,0.2); }
@@ -24,9 +24,9 @@
     <div id="start-screen" class="max-w-md w-full text-center animate-bounce-in">
         <div class="bg-white p-10 rounded-3xl shadow-2xl border-orange-200 border-b-8">
             <h1 class="text-4xl font-black text-orange-600 mb-2">THANH VÂN'S GAME</h1>
-            <p class="text-gray-600 text-xl mb-8 font-bold">Ready to learn with Dad Hiệp? ❤️</p>
-            <div id="priority-msg" class="hidden mb-4 p-3 bg-yellow-100 text-yellow-700 rounded-xl font-bold text-sm">
-                🌟 Ưu tiên ôn lại các câu con đã làm sai nhé!
+            <p class="text-gray-600 text-xl mb-6 font-bold">Ready to learn with Dad Hiệp? ❤️</p>
+            <div id="priority-msg" class="hidden mb-6 p-3 bg-yellow-100 text-yellow-700 rounded-xl font-bold text-sm animate-pulse">
+                🌟 Trò chơi sẽ ưu tiên các câu Thanh Vân đã làm sai nhé!
             </div>
             <div class="grid grid-cols-2 gap-4 mb-10 text-5xl">
                 <span>🌈</span><span>📚</span><span>🚀</span><span>✨</span>
@@ -47,8 +47,8 @@
             </div>
         </div>
 
-        <div class="game-card p-8 mb-6 min-h-[450px] flex flex-col justify-center relative overflow-hidden text-center">
-            <div id="review-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-sm font-black px-5 py-2 rounded-bl-2xl z-10 shadow-lg">REVIEW FOR VÂN</div>
+        <div class="game-card p-8 mb-6 min-h-[480px] flex flex-col justify-center relative overflow-hidden text-center">
+            <div id="review-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-sm font-black px-5 py-2 rounded-bl-2xl z-10 shadow-lg italic">RE-DO FOR VÂN</div>
             <div id="question-count" class="absolute top-0 left-0 bg-orange-100 text-orange-700 text-sm font-black px-4 py-2 rounded-br-2xl">Quest: 1/20</div>
             <div id="question-area" class="w-full mt-6"></div>
         </div>
@@ -76,20 +76,19 @@
 
     <script>
         let questions = [];
-        let wrongQuestionsCurrentRound = []; // Cho vòng ôn tập ngay lập tức
+        let wrongInCurrentRound = [];
         let currentIdx = 0;
         let score = 0;
         let isReviewMode = false;
-        let currentSentence = [];
         const QUESTIONS_PER_ROUND = 20;
 
+        // Cấu hình âm thanh
         const synth = window.speechSynthesis;
         let enVoice = null;
 
         function loadVoices() {
             const voices = synth.getVoices();
-            enVoice = voices.find(v => v.lang.includes('en-US') && v.name.includes('Siri')) || 
-                      voices.find(v => v.lang.includes('en-US') && v.name.includes('Samantha')) || 
+            enVoice = voices.find(v => v.lang.includes('en-US') && (v.name.includes('Siri') || v.name.includes('Samantha'))) || 
                       voices.find(v => v.lang.includes('en-US')) || voices[0];
         }
         if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
@@ -104,50 +103,29 @@
             synth.speak(utter);
         }
 
-        // --- HỆ THỐNG BỘ NHỚ THÔNG MINH ---
-        function getPersistentWrongQuestions() {
-            const data = localStorage.getItem('thanhVan_wrongAnswers');
-            return data ? JSON.parse(data) : [];
+        // --- BỘ NHỚ THÔNG MINH (LocalStorage) ---
+        function getWrongs() { return JSON.parse(localStorage.getItem('thanhVan_wrongs') || '[]'); }
+        function saveWrong(q) {
+            let ws = getWrongs();
+            if (!ws.find(item => item.q === q.q)) { ws.push(q); localStorage.setItem('thanhVan_wrongs', JSON.stringify(ws)); }
+        }
+        function removeWrong(q) {
+            let ws = getWrongs().filter(item => item.q !== q.q);
+            localStorage.setItem('thanhVan_wrongs', JSON.stringify(ws));
         }
 
-        function saveWrongQuestion(questionObj) {
-            let wrongs = getPersistentWrongQuestions();
-            // Lưu theo câu hỏi (tránh trùng lặp bằng cách so sánh nội dung)
-            if (!wrongs.find(q => q.q === questionObj.q)) {
-                wrongs.push(questionObj);
-                localStorage.setItem('thanhVan_wrongAnswers', JSON.stringify(wrongs));
-            }
-        }
-
-        function removeWrongQuestion(questionObj) {
-            let wrongs = getPersistentWrongQuestions();
-            wrongs = wrongs.filter(q => q.q !== questionObj.q);
-            localStorage.setItem('thanhVan_wrongAnswers', JSON.stringify(wrongs));
-        }
-
-        window.onload = function() {
-            const wrongs = getPersistentWrongQuestions();
-            if (wrongs.length > 0) {
-                document.getElementById('priority-msg').classList.remove('hidden');
-            }
-        };
+        window.onload = () => { if(getWrongs().length > 0) document.getElementById('priority-msg').classList.remove('hidden'); };
 
         function startGame() {
-            if (typeof fullBank === 'undefined') {
-                alert("Lỗi: Không tìm thấy questions.js!");
-                return;
-            }
-
-            const persistentWrongs = getPersistentWrongQuestions();
+            if (typeof fullBank === 'undefined') { alert("Missing questions.js!"); return; }
+            
+            const ws = getWrongs();
             let pool = [...fullBank].sort(() => 0.5 - Math.random());
+            let others = pool.filter(p => !ws.find(w => w.q === p.q));
             
-            // Lọc ra các câu trong pool mà không nằm trong danh sách sai để làm nguồn bổ sung
-            let otherQuestions = pool.filter(q => !persistentWrongs.find(w => w.q === q.q));
+            questions = [...ws, ...others].slice(0, QUESTIONS_PER_ROUND);
+            currentIdx = 0; score = 0; wrongInCurrentRound = []; isReviewMode = false;
             
-            // Kết hợp: Ưu tiên câu sai lên đầu, sau đó điền đầy đủ 20 câu
-            questions = [...persistentWrongs, ...otherQuestions].slice(0, QUESTIONS_PER_ROUND);
-            
-            currentIdx = 0; score = 0; wrongQuestionsCurrentRound = []; isReviewMode = false;
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             speak("Hello Thanh Vân, let's play with Dad!");
@@ -168,12 +146,12 @@
             let html = '';
             switch(q.type) {
                 case 'match':
-                    html = `<h2 class="text-2xl font-black mb-8 text-gray-700">Find the image for:<br><span class="text-orange-600 text-6xl mt-2 block">${q.q}</span></h2>
-                            <div class="grid grid-cols-2 gap-5">${q.options.map(opt => `<button onclick="checkAnswer('${opt}', '${q.a}')" class="btn-3d bg-orange-50 p-6 emoji-img rounded-3xl border-2 border-orange-100">${opt}</button>`).join('')}</div>`;
+                    html = `<h2 class="text-2xl font-black mb-8 text-gray-700">Find image for:<br><span class="text-orange-600 text-6xl mt-2 block">${q.q}</span></h2>
+                            <div class="grid grid-cols-2 gap-5">${q.options.map(o => `<button onclick="checkAnswer('${o}', '${q.a}')" class="btn-3d bg-orange-50 p-6 emoji-img rounded-3xl border-2 border-orange-100">${o}</button>`).join('')}</div>`;
                     break;
                 case 'quiz':
                     html = `<h2 class="text-3xl font-black mb-6 text-gray-700 leading-tight">${q.q}</h2><div class="emoji-img mb-8 animate-bounce">${q.img || '❓'}</div>
-                            <div class="grid grid-cols-1 gap-4">${q.options.map(opt => `<button onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', '${q.a.replace(/'/g, "\\")}')" class="btn-3d bg-white border-2 border-orange-100 font-black py-5 rounded-2xl text-2xl text-gray-700">${opt}</button>`).join('')}</div>`;
+                            <div class="grid grid-cols-1 gap-4">${q.options.map(o => `<button onclick="checkAnswer('${o.replace(/'/g, "\\'")}', '${q.a.replace(/'/g, "\\")}')" class="btn-3d bg-white border-2 border-orange-100 font-black py-5 rounded-2xl text-2xl text-gray-700">${o}</button>`).join('')}</div>`;
                     break;
                 case 'tf':
                     html = `<h2 class="text-2xl font-black mb-6 text-gray-700">True or False?</h2><div class="emoji-img mb-6">${q.img}</div><h3 class="text-5xl font-black text-orange-600 mb-10">${q.q}</h3>
@@ -181,97 +159,79 @@
                             <button onclick="checkAnswer('false', '${q.a}')" class="flex-1 btn-3d bg-red-500 text-white font-black py-6 rounded-3xl text-3xl">FALSE ❌</button></div>`;
                     break;
                 case 'scramble':
-                    const shufParts = [...q.parts].sort(() => 0.5 - Math.random());
-                    currentSentence = [];
-                    html = `<h2 class="text-2xl font-black mb-8 text-gray-600">Put the words in order:<br><span class="text-orange-600 text-3xl">"${q.q}"</span></h2>
+                    const shuf = [...q.parts].sort(() => 0.5 - Math.random());
+                    html = `<h2 class="text-2xl font-black mb-8 text-gray-600">Order the words:<br><span class="text-orange-600 text-3xl">"${q.q}"</span></h2>
                             <div id="drop-zone" class="bg-orange-50 rounded-3xl p-6 min-h-[100px] flex flex-wrap gap-3 mb-8 border-2 border-dashed border-orange-200 justify-center items-center"></div>
-                            <div class="flex flex-wrap gap-3 justify-center">${shufParts.map((p, idx) => `<button id="scramble-btn-${idx}" onclick="selectWord(this, ${idx})" class="btn-3d bg-yellow-100 px-6 py-3 rounded-xl font-black text-2xl text-orange-800">${p}</button>`).join('')}</div>
-                            <div class="mt-10"><button onclick="checkScramble('${q.a.replace(/'/g, "\\'")}')" class="btn-3d bg-orange-500 text-white px-12 py-4 rounded-full font-black text-3xl shadow-lg">Check! 🔍</button></div>`;
+                            <div class="flex flex-wrap gap-3 justify-center">${shuf.map((p, i) => `<button id="btn-s-${i}" onclick="selectWord(this, ${i})" class="btn-3d bg-yellow-100 px-6 py-3 rounded-xl font-black text-2xl text-orange-800">${p}</button>`).join('')}</div>
+                            <div class="mt-10"><button onclick="checkScramble('${q.a.replace(/'/g, "\\'")}')" class="btn-3d bg-orange-500 text-white px-12 py-4 rounded-full font-black text-3xl">Check! 🔍</button></div>`;
                     break;
             }
             area.innerHTML = html;
         }
 
-        // --- LOGIC XẾP CÂU NÂNG CAO ---
+        // Logic rút từ lại (Undo)
         function selectWord(btn, idx) {
             const word = btn.innerText;
-            const dropZone = document.getElementById('drop-zone');
-            
-            btn.style.visibility = 'hidden';
-            btn.style.pointerEvents = 'none';
-
+            btn.style.visibility = 'hidden'; btn.style.pointerEvents = 'none';
             const span = document.createElement('span');
-            span.className = "bg-white border-2 border-orange-200 px-4 py-2 rounded-xl font-black text-orange-700 animate-bounce-in text-2xl cursor-pointer hover:bg-red-50 transition-colors";
+            span.className = "bg-white border-2 border-orange-200 px-4 py-2 rounded-xl font-black text-orange-700 animate-bounce-in text-2xl cursor-pointer hover:bg-red-50";
             span.innerText = word;
-            span.dataset.btnId = `scramble-btn-${idx}`;
-            
+            span.dataset.originId = `btn-s-${idx}`;
             span.onclick = function() {
-                const originalBtn = document.getElementById(this.dataset.btnId);
-                originalBtn.style.visibility = 'visible';
-                originalBtn.style.pointerEvents = 'auto';
+                document.getElementById(this.dataset.originId).style.visibility = 'visible';
+                document.getElementById(this.dataset.originId).style.pointerEvents = 'auto';
                 this.remove();
             };
-
-            dropZone.appendChild(span);
+            document.getElementById('drop-zone').appendChild(span);
         }
 
         function checkScramble(correct) {
-            const dropZone = document.getElementById('drop-zone');
-            const user = Array.from(dropZone.children).map(c => c.innerText).join(' ').replace(/[?.,!]/g, '').toLowerCase().trim();
-            const real = correct.replace(/[?.,!]/g, '').toLowerCase().trim();
-            checkAnswer(user, real);
+            const user = Array.from(document.getElementById('drop-zone').children).map(c => c.innerText).join(' ');
+            checkAnswer(user, correct);
         }
 
+        // --- HÀM SO SÁNH THÔNG MINH (KHÔNG SỢ DẤU NHÁY) ---
         function checkAnswer(user, correct) {
-            const isCorrect = String(user).toLowerCase() === String(correct).toLowerCase();
+            const clean = (s) => String(s).toLowerCase().replace(/['’‘´`?.,!]/g, '').trim().replace(/\s+/g, ' ');
+            const isCorrect = clean(user) === clean(correct);
             const q = questions[currentIdx];
-            const overlay = document.getElementById('feedback-overlay');
-            overlay.classList.remove('hidden');
             
-            const praises = ["Great job, Thanh Vân!", "Thanh Vân, you are amazing!", "Well done, Thanh Vân!", "Excellent, Thanh Vân!"];
-            const reminds = ["Don't worry, Thanh Vân!", "Thanh Vân, you can do it!", "Keep going, Thanh Vân!"];
-
+            document.getElementById('feedback-overlay').classList.remove('hidden');
+            const box = document.getElementById('feedback-box');
+            
             if (isCorrect) {
-                score += 10;
-                document.getElementById('score').innerText = score;
-                // Nếu đúng, xóa khỏi bộ nhớ ưu tiên
-                removeWrongQuestion(q);
-
-                document.getElementById('feedback-box').className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px] border-green-400";
+                score += 10; document.getElementById('score').innerText = score;
+                removeWrong(q);
+                box.className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px] border-green-400";
                 document.getElementById('feedback-icon').innerHTML = "🌟";
                 document.getElementById('feedback-text').innerText = "BRILLIANT!";
                 document.getElementById('feedback-sub').innerText = "Correct, Thanh Vân!";
                 document.getElementById('feedback-btn').className = "btn-3d w-full py-5 rounded-2xl text-2xl font-black bg-green-500 text-white";
-                speak(praises[Math.floor(Math.random()*praises.length)]);
-                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                speak(["Well done, Thanh Vân!", "Thanh Vân, you are amazing!", "Superstar, Thanh Vân!"][Math.floor(Math.random()*3)]);
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             } else {
-                if (!isReviewMode) wrongQuestionsCurrentRound.push(q);
-                // Nếu sai, lưu vào bộ nhớ ưu tiên cho lần chơi sau
-                saveWrongQuestion(q);
-
-                document.getElementById('feedback-box').className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px] border-red-400";
+                if(!isReviewMode) { wrongInCurrentRound.push(q); saveWrong(q); }
+                box.className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px] border-red-400";
                 document.getElementById('feedback-icon').innerHTML = "💪";
                 document.getElementById('feedback-text').innerText = "KEEP IT UP!";
                 document.getElementById('feedback-sub').innerText = `Answer: ${correct}`;
                 document.getElementById('feedback-btn').className = "btn-3d w-full py-5 rounded-2xl text-2xl font-black bg-red-500 text-white";
-                speak(reminds[Math.floor(Math.random()*reminds.length)]);
+                speak("Don't worry, Thanh Vân! You can do it!");
             }
         }
 
         function nextQuestion() {
             document.getElementById('feedback-overlay').classList.add('hidden');
             currentIdx++;
-            if (currentIdx < questions.length) {
-                renderQuestion();
-            } else if (wrongQuestionsCurrentRound.length > 0 && !isReviewMode) {
-                isReviewMode = true; questions = [...wrongQuestionsCurrentRound]; wrongQuestionsCurrentRound = []; currentIdx = 0;
-                speak("Review time for Thanh Vân! You can do it!");
-                renderQuestion();
+            if (currentIdx < questions.length) renderQuestion();
+            else if (wrongInCurrentRound.length > 0 && !isReviewMode) {
+                isReviewMode = true; questions = [...wrongInCurrentRound]; wrongInCurrentRound = []; currentIdx = 0;
+                speak("Review time for Thanh Vân!"); renderQuestion();
             } else {
                 document.getElementById('game-screen').classList.add('hidden');
                 document.getElementById('end-screen').classList.remove('hidden');
                 document.getElementById('final-score-text').innerText = `Thanh Vân got ${score} points! Dad is proud of you!`;
-                speak(`Congratulations, Thanh Vân! You got ${score} points. Dad loves you!`);
+                speak(`Congratulations, Thanh Vân! Dad loves you!`);
             }
         }
     </script>
