@@ -2,502 +2,233 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tiếng Anh của Thanh Vân</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hành Trình Tiếng Anh Toàn Diện</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
-            background-color: #dff9fb;
-            margin: 0;
-            padding: 10px;
-            text-align: center;
-            color: #2c3e50;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-        }
-        
-        h1 { color: #e17055; font-size: 1.5em; margin: 10px 0; }
-        
-        .card {
-            background: white;
-            border-radius: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            padding: 20px;
-            max-width: 650px;
-            margin: 0 auto;
-            min-height: 480px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background: #eee;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: #00b894;
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .visual-area { font-size: 4.5em; margin: 10px 0; min-height: 80px; }
-        .question-text { font-size: 1.4em; margin-bottom: 15px; color: #2d3436; font-weight: bold; }
-
-        .btn {
-            background: #0984e3;
-            color: white;
-            border: none;
-            padding: 15px 10px;
-            font-size: 1.2em;
-            border-radius: 15px;
-            cursor: pointer;
-            margin: 8px auto;
-            width: 100%;
-            max-width: 400px;
-            font-weight: bold;
-            box-shadow: 0 5px #74b9ff;
-            display: block;
-            transition: all 0.1s;
-        }
-        .btn:active { transform: translateY(3px); box-shadow: 0 2px #74b9ff; }
-        
-        /* Style cho phần Spelling (Xếp chữ) */
-        .spelling-board {
-            margin-bottom: 20px;
-            min-height: 50px;
-        }
-        .spelling-slot {
-            display: inline-block;
-            width: 45px;
-            height: 45px;
-            border-bottom: 3px solid #333;
-            margin: 5px;
-            font-size: 1.6em;
-            line-height: 45px;
-            color: #0984e3;
-            font-weight: bold;
-            cursor: pointer; /* Cho phép bấm vào để xóa */
-            background-color: #f1f2f6;
-            border-radius: 5px 5px 0 0;
-        }
-        .spelling-slot:hover {
-            background-color: #ffeaa7;
-        }
-        
-        .letter-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .btn-letter {
-            width: 55px;
-            height: 55px;
-            background: #fdcb6e;
-            color: #2d3436;
-            border-radius: 12px;
-            font-size: 1.4em;
-            font-weight: bold;
-            border: none;
-            box-shadow: 0 4px #e17055;
-            cursor: pointer;
-        }
-        .btn-letter.used {
-            opacity: 0; 
-            pointer-events: none;
-            transform: scale(0);
-        }
-        .btn-letter.visible {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .btn-unit6 { background: #ff7675; box-shadow: 0 4px #d63031; }
-        .btn-unit7 { background: #00cec9; box-shadow: 0 4px #00b894; }
-        .btn-home { background: #636e72; box-shadow: 0 4px #2d3436; width: auto; padding: 10px 30px; margin-top: 20px; }
-        .btn-audio { background: #fdcb6e; width: 60px; height: 60px; border-radius: 50%; font-size: 2em; margin: 0 auto; border: 2px solid white; box-shadow: 0 4px #b2bec3;}
-
-        #feedback { font-size: 1.3em; font-weight: bold; min-height: 35px; margin-top: 15px; }
-        .correct { color: #00b894; }
-        .wrong { color: #d63031; }
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+        body { font-family: 'Nunito', sans-serif; background-color: #f0fdf4; }
+        .game-card { background: white; border-radius: 20px; box-shadow: 0 10px 0 #dcfce7, 0 10px 20px rgba(0,0,0,0.1); }
+        .btn-3d { transition: all 0.1s; border-bottom: 5px solid rgba(0,0,0,0.2); position: relative; }
+        .btn-3d:active { transform: translateY(4px); border-bottom: 0px solid rgba(0,0,0,0.2); }
+        .emoji-img { font-size: 4.5rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
         .hidden { display: none !important; }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .animate-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-4 select-none">
 
-    <div id="home-screen" class="card">
-        <h1>Hello Thanh Vân! 👧🏻</h1>
-        <p>Con chọn bài để học nhé:</p>
-        <button class="btn btn-unit6" onclick="initGame('unit6')">🍽️ Unit 6: Eating Out</button>
-        <button class="btn btn-unit7" onclick="initGame('unit7')">🎨 Unit 7: Art Class</button>
-        <p style="font-size: 0.9em; color: #888; margin-top: 20px;">Hệ thống sẽ trộn 20 câu ngẫu nhiên.</p>
+    <div id="start-screen" class="max-w-md w-full text-center animate-pop">
+        <div class="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-green-200">
+            <h1 class="text-4xl font-black text-green-600 mb-2">SIÊU TRÍ TUỆ</h1>
+            <p class="text-gray-500 text-lg mb-6">Tổng hợp: Nhà - Trường - Cảm xúc</p>
+            <div class="flex justify-center gap-4 mb-8 text-5xl">
+                <span>🏠</span><span>🥋</span><span>⛈️</span><span>🍱</span>
+            </div>
+            <button onclick="startGame()" class="btn-3d w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl text-2xl shadow-lg">
+                BẮT ĐẦU HỌC! 🚀
+            </button>
+        </div>
     </div>
 
-    <div id="game-screen" class="card hidden">
-        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-        <div id="quiz-container" style="width: 100%;">
-            <button class="btn btn-audio" onclick="playCurrentAudio()">🔊</button>
-            
-            <div id="display-area">
-                <div class="question-text" id="q-text">Loading...</div>
-                <div class="visual-area" id="q-visual"></div>
-                <div id="spelling-board" class="spelling-board hidden"></div>
+    <div id="game-screen" class="hidden max-w-lg w-full">
+        <div class="flex justify-between items-center mb-6">
+            <div class="w-full bg-gray-200 rounded-full h-4 mr-4 border-2 border-white shadow-sm overflow-hidden">
+                <div id="progress-bar" class="bg-yellow-400 h-full transition-all duration-500" style="width: 0%"></div>
             </div>
-
-            <div id="options-area"></div>
-            <div id="feedback"></div>
+            <div class="bg-white px-4 py-1 rounded-xl font-black text-green-600 border-b-4 border-gray-100"><span id="score">0</span> 🏆</div>
         </div>
 
-        <button class="btn btn-home" onclick="goHome()">🏠 Thoát</button>
+        <div class="game-card p-6 mb-6 min-h-[420px] flex flex-col justify-center relative overflow-hidden">
+            <div id="review-badge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl z-10 shadow-md">ÔN TẬP</div>
+            <div id="question-count" class="absolute top-0 left-0 bg-blue-100 text-blue-600 text-xs font-bold px-3 py-1 rounded-br-xl">Câu: 1/20</div>
+            <div id="question-area" class="text-center w-full mt-4"></div>
+        </div>
+
+        <div id="feedback-overlay" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div id="feedback-box" class="bg-white rounded-3xl p-8 text-center max-w-sm w-full shadow-2xl animate-pop border-b-8">
+                <div id="feedback-icon" class="text-7xl mb-4"></div>
+                <h2 id="feedback-text" class="text-3xl font-black mb-2"></h2>
+                <p id="feedback-sub" class="text-gray-700 text-xl font-bold mb-6"></p>
+                <button onclick="nextQuestion()" class="btn-3d w-full py-4 rounded-xl text-2xl font-black text-white shadow-md" id="feedback-btn">Tiếp tục</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="end-screen" class="hidden max-w-md w-full text-center animate-pop">
+        <div class="bg-white p-8 rounded-3xl shadow-xl border-b-8 border-purple-200">
+            <h1 class="text-4xl font-black text-purple-600 mb-4">XUẤT SẮC! 🎉</h1>
+            <div class="text-7xl mb-6">🏆</div>
+            <p id="final-score-text" class="text-gray-600 text-xl mb-8 font-bold"></p>
+            <button onclick="location.reload()" class="btn-3d w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-2xl shadow-lg">CHƠI LẠI 🔄</button>
+        </div>
     </div>
 
     <script>
-        // --- 1. DỮ LIỆU ĐƯỢC TRÍCH XUẤT TỪ SÁCH SUPER KIDS (PPTX & PDF) ---
-        var rawData = {
-            "unit6": {
-                vocab: [
-                    // Core Vocab
-                    { w: "Spaghetti", m: "Mỳ Ý", e: "🍝" },
-                    { w: "French fries", m: "Khoai tây chiên", e: "🍟" },
-                    { w: "Fish", m: "Cá", e: "🐟" },
-                    { w: "Salad", m: "Rau trộn", e: "🥗" },
-                    { w: "Ice cream", m: "Kem", e: "🍦" },
-                    { w: "Noodles", m: "Mì / Bún", e: "🍜" },
-                    { w: "Fruit", m: "Trái cây", e: "🍎" },
-                    { w: "Soup", m: "Canh / Súp", e: "🍲" },
-                    // Extra/Review
-                    { w: "Chicken", m: "Thịt gà", e: "🍗" },
-                    { w: "Juice", m: "Nước ép", e: "🧃" },
-                    { w: "Rice", m: "Cơm", e: "🍚" },
-                    { w: "Cake", m: "Bánh ngọt", e: "🍰" },
-                    { w: "Chopsticks", m: "Đôi đũa", e: "🥢" },
-                    // Phonics (Sound 'e')
-                    { w: "Bed", m: "Cái giường", e: "🛏️" },
-                    { w: "Pen", m: "Cây bút mực", e: "🖊️" },
-                    { w: "Red", m: "Màu đỏ", e: "🔴" },
-                    { w: "Ten", m: "Số 10", e: "🔟" },
-                    { w: "Bell", m: "Cái chuông", e: "🔔" }
-                ],
-                sentences: [
-                    // Grammar
-                    { q: "What do you ____?", a: "want", w: ["have", "like"], e: "🤔", audio: "What do you want?" },
-                    { q: "I ____ noodles.", a: "want", w: ["use", "see"], e: "🍜", audio: "I want noodles." },
-                    { q: "We ____ soup.", a: "want", w: ["is", "are"], e: "🍲", audio: "We want soup." },
-                    { q: "Can you use ____?", a: "chopsticks", w: ["spoon", "fork"], e: "🥢", audio: "Can you use chopsticks?" },
-                    { q: "Yes, I ____.", a: "can", w: ["can't", "am"], e: "👍", audio: "Yes, I can." },
-                    // Do it! (Commands from Page 42)
-                    { q: "Get in ____.", a: "line", w: ["circle", "box"], e: "🚶🚶‍♀️", audio: "Get in line." },
-                    { q: "____ your food.", a: "Choose", w: ["Throw", "Sleep"], e: "👉🍱", audio: "Choose your food." },
-                    { q: "____ your food.", a: "Take", w: ["Find", "Make"], e: "🤲🍱", audio: "Take your food." },
-                    { q: "Find a ____.", a: "seat", w: ["food", "trash"], e: "🪑", audio: "Find a seat." },
-                    { q: "Throw away the ____.", a: "trash", w: ["lunch", "seat"], e: "🗑️", audio: "Throw away the trash." }
-                ]
-            },
-            "unit7": {
-                vocab: [
-                    // Core Vocab
-                    { w: "Scissors", m: "Cây kéo", e: "✂️" },
-                    { w: "Paintbrushes", m: "Cọ vẽ", e: "🖌️" },
-                    { w: "Paints", m: "Màu vẽ", e: "🎨" },
-                    { w: "Stickers", m: "Miếng dán", e: "🌟" },
-                    { w: "Pins", m: "Cái ghim", e: "📌" },
-                    // Extra Items
-                    { w: "Rulers", m: "Thước kẻ", e: "📏" },
-                    { w: "Crayons", m: "Bút sáp màu", e: "🖍️" },
-                    { w: "Erasers", m: "Cục tẩy", e: "🧼" },
-                    { w: "Markers", m: "Bút lông", e: "🖊️" },
-                    // Prepositions
-                    { w: "In", m: "Ở trong", e: "📥" },
-                    { w: "On", m: "Ở trên", e: "🔛" },
-                    { w: "Under", m: "Ở dưới", e: "⬇️" },
-                    // Phonics (Sound 'i') - Page 54
-                    { w: "Sit", m: "Ngồi", e: "🪑" },
-                    { w: "Hit", m: "Đánh", e: "🏏" },
-                    { w: "Big", m: "To lớn", e: "🐘" },
-                    { w: "Dig", m: "Đào đất", e: "⛏️" },
-                    { w: "Fox", m: "Con cáo", e: "🦊" }
-                ],
-                sentences: [
-                    // Grammar - Prepositions
-                    { q: "The scissors are ____ the box.", a: "in", w: ["on", "under"], e: "📦✂️", audio: "The scissors are in the box." },
-                    { q: "Where are the ____?", a: "stickers", w: ["sticker", "stick"], e: "🌟❓", audio: "Where are the stickers?" },
-                    { q: "The paints are ____ the box.", a: "in", w: ["under", "on"], e: "🎨📦", audio: "The paints are in the box." },
-                    { q: "The rulers are ____ the table.", a: "under", w: ["in", "on"], e: "📏⬇️", audio: "The rulers are under the table." },
-                    // Do it! (Drawing Commands - Page 53)
-                    { q: "Draw a ____ and a body.", a: "head", w: ["leg", "tail"], e: "👤", audio: "Draw a head and a body." },
-                    { q: "Draw 2 ____ and a nose.", a: "eyes", w: ["ears", "legs"], e: "👀", audio: "Draw 2 eyes and a nose." },
-                    { q: "____ the picture.", a: "Color", w: ["Draw", "Spell"], e: "🖍️", audio: "Color the picture." },
-                    { q: "Write ____ under the picture.", a: "fox", w: ["box", "six"], e: "✍️🦊", audio: "Write fox under the picture." }
-                ]
-            }
-        };
+        // KHO DỮ LIỆU TỔNG HỢP TỪ 2 FILE PDF
+        const fullBank = [
+            // UNIT 1: FEELINGS
+            { type: 'match', q: 'Happy', a: '😊', options: ['😊', '😢', '😡', '😴'], sound: 'Happy' },
+            { type: 'match', q: 'Sad', a: '😢', options: ['😊', '😢', '😡', '😴'], sound: 'Sad' },
+            { type: 'quiz', q: 'Cảm giác sợ hãi là?', img: '😨', a: 'Scared', options: ['Happy', 'Angry', 'Scared', 'Sleepy'], sound: 'Scared' },
+            { type: 'tf', q: 'Angry', img: '😡', a: true, sound: 'Angry' },
+            { type: 'tf', q: 'Thirsty (Khát)', img: '🍔', a: false, sound: 'Thirsty' },
+            { type: 'scramble', q: 'Bạn có sợ không?', a: "Are you scared?", parts: ["Are", "you", "scared?"], sound: "Are you scared?" },
 
-        var studentName = "Thanh Vân";
-        var sessionQuestions = [];
-        var currentQ = null;
-        var qIndex = 0;
-        var totalQ = 20;
-        
-        var spellingState = {
-            target: "",
-            current: [],
-            letterPool: []
-        };
+            // UNIT 2: OUR HOUSE
+            { type: 'quiz', q: 'Nơi nào để nấu ăn?', img: '🍳', a: 'Kitchen', options: ['Kitchen', 'Bedroom', 'Yard', 'Hall'], sound: 'Kitchen' },
+            { type: 'match', q: 'Bathroom', a: '🚿', options: ['🚿', '🛌', '🛋️', '🌳'], sound: 'Bathroom' },
+            { type: 'match', q: 'Yard (Sân)', a: '🌳', options: ['🚿', '🛌', '🛋️', '🌳'], sound: 'Yard' },
+            { type: 'tf', q: 'Dining room', img: '🍽️', a: true, sound: 'Dining room' },
+            { type: 'scramble', q: 'Joey đang ở trong phòng tắm.', a: "Joey is in the bathroom", parts: ["Joey", "is", "in", "the", "bathroom"], sound: "Joey is in the bathroom" },
+            { type: 'quiz', q: 'Việc nhà: Rửa bát là?', img: '🥣', a: 'Wash the dishes', options: ['Wash the dishes', 'Make the bed', 'Rake the leaves', 'Wipe the table'], sound: 'Wash the dishes' },
 
-        // --- 2. ENGINE TẠO CÂU HỎI ---
-        function generateSession(unitKey) {
-            var data = rawData[unitKey];
-            var pool = [];
+            // UNIT 3: WEATHER
+            { type: 'match', q: 'Snowy', a: '❄️', options: ['☀️', '🌧️', '❄️', '🌬️'], sound: 'Snowy' },
+            { type: 'quiz', q: 'Thời tiết có nhiều sương mù?', img: '🌫️', a: 'Foggy', options: ['Sunny', 'Foggy', 'Windy', 'Rainy'], sound: 'Foggy' },
+            { type: 'tf', q: 'Windy (Có gió)', img: '🌬️', a: true, sound: 'Windy' },
+            { type: 'scramble', q: 'Thời tiết như thế nào?', a: "What's the weather like?", parts: ["What's", "the", "weather", "like?"], sound: "What's the weather like?" },
 
-            // Từ vựng (Vocabulary)
-            data.vocab.forEach(function(item) {
-                // Dạng 1: Nhìn hình chọn chữ
-                pool.push({ type: "mcq", q: "Cái này tiếng Anh là gì?", sub: item.e, a: item.w, wrong: getWrongs(item.w, data.vocab, "w"), audio: item.w, isSentence: false });
-                
-                // Dạng 2: Nghe chọn nghĩa Tiếng Việt
-                pool.push({ type: "mcq", q: "Nghe và chọn nghĩa đúng:", sub: "🔊", a: item.m, wrong: getWrongs(item.m, data.vocab, "m"), audio: item.w, isSentence: false });
-                
-                // Dạng 3: Xếp chữ (Chỉ từ nào ngắn <= 10 ký tự và không có dấu cách)
-                if (item.w.length <= 10 && item.w.indexOf(" ") === -1) {
-                    pool.push({ type: "spell", q: "Sắp xếp các chữ cái:", sub: item.e, a: item.w, audio: item.w, isSentence: false });
-                }
-            });
+            // UNIT: SCHOOL & CLASSES
+            { type: 'match', q: 'Math class', a: '📐', options: ['🎨', '📐', '⚽', '🏊'], sound: 'Math class' },
+            { type: 'match', q: 'Judo practice', a: '🥋', options: ['🥋', '⚾', '💃', '🖌️'], sound: 'Judo practice' },
+            { type: 'quiz', q: 'Lớp học bơi là gì?', img: '🏊', a: 'Swimming class', options: ['Math class', 'Swimming class', 'Art class', 'Dance class'], sound: 'Swimming class' },
+            { type: 'scramble', q: 'Cái kéo ở trong hộp.', a: "The scissors are in the box", parts: ["The", "scissors", "are", "in", "the", "box"], sound: "The scissors are in the box" },
 
-            // Mẫu câu (Sentences)
-            data.sentences.forEach(function(item) {
-                pool.push({ type: "mcq", q: item.q, sub: item.e, a: item.a, wrong: item.w, audio: item.audio, isSentence: true });
-            });
-
-            // Trộn và lấy 20 câu
-            pool.sort(function() { return 0.5 - Math.random() });
-            return pool.slice(0, totalQ);
-        }
-
-        function getWrongs(correct, sourceList, field) {
-            var res = [];
-            var attempts = 0;
-            // Gom toàn bộ từ vựng 2 bài để làm nhiễu
-            var allVocab = rawData.unit6.vocab.concat(rawData.unit7.vocab);
+            // UNIT: EATING OUT & FOODS
+            { type: 'match', q: 'Sushi (Japan)', a: '🍣', options: ['🍣', '🥟', '🌮', '🌭'], sound: 'Sushi' },
+            { type: 'match', q: 'Tacos (Mexico)', a: '🌮', options: ['🍔', '🌮', '🥣', '🥗'], sound: 'Tacos' },
+            { type: 'quiz', q: 'Món Kimchi của nước nào?', img: '🥬', a: 'Korea', options: ['China', 'Japan', 'Korea', 'Mexico'], sound: 'Korea' },
+            { type: 'scramble', q: 'Bạn có biết dùng đũa không?', a: "Can you use chopsticks?", parts: ["Can", "you", "use", "chopsticks?"], sound: "Can you use chopsticks?" },
+            { type: 'quiz', q: 'Tôi muốn ăn mì.', a: 'I want noodles', options: ['I want noodles', 'I want soup', 'I want fish', 'I want fruit'], sound: 'I want noodles' },
             
-            while (res.length < 2 && attempts < 50) {
-                var rand = allVocab[Math.floor(Math.random() * allVocab.length)];
-                if (rand[field] !== correct && res.indexOf(rand[field]) === -1) {
-                    res.push(rand[field]);
-                }
-                attempts++;
-            }
-            if (res.length < 2) res.push("Blue");
-            if (res.length < 2) res.push("Banana");
-            return res;
+            // PHONICS
+            { type: 'quiz', q: 'Đánh vần từ "Cái hộp" (Box)?', img: '📦', a: 'b-o-x', options: ['f-o-x', 'b-o-x', 'c-a-t', 'b-i-g'], sound: 'box' },
+            { type: 'tf', q: 'Bell (Quả chuông có vần -ell)', img: '🔔', a: true, sound: 'Bell' }
+        ];
+
+        let questions = [];
+        let wrongQuestions = [];
+        let currentIdx = 0;
+        let score = 0;
+        let isReviewMode = false;
+        const synth = window.speechSynthesis;
+
+        function speak(text, lang='en-US') {
+            if (synth.speaking) synth.cancel();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = lang;
+            utter.rate = 0.9;
+            synth.speak(utter);
         }
 
-        // --- 3. LOGIC GAME ---
-        function initGame(unit) {
-            sessionQuestions = generateSession(unit);
-            qIndex = 0;
-            document.getElementById('home-screen').classList.add('hidden');
+        function startGame() {
+            // Trộn và lấy ngẫu nhiên 20 câu
+            const shuffled = [...fullBank].sort(() => 0.5 - Math.random());
+            questions = shuffled.slice(0, 20);
+            currentIdx = 0; score = 0; wrongQuestions = []; isReviewMode = false;
+            document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            nextQuestion();
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentIdx];
+            const area = document.getElementById('question-area');
+            document.getElementById('progress-bar').style.width = `${(currentIdx/questions.length)*100}%`;
+            document.getElementById('question-count').innerText = `Câu: ${currentIdx + 1}/${questions.length}`;
+            document.getElementById('review-badge').classList.toggle('hidden', !isReviewMode);
+
+            if(q.sound) setTimeout(() => speak(q.sound), 500);
+
+            let html = '';
+            switch(q.type) {
+                case 'match':
+                    html = `<h2 class="text-2xl font-bold mb-6 text-gray-700">Tìm hình cho từ:<br><span class="text-blue-600 text-5xl">${q.q}</span></h2>
+                            <div class="grid grid-cols-2 gap-4">${q.options.map(opt => `<button onclick="checkAnswer('${opt}', '${q.a}')" class="btn-3d bg-blue-50 p-4 emoji-img rounded-xl">${opt}</button>`).join('')}</div>`;
+                    break;
+                case 'quiz':
+                    html = `<h2 class="text-2xl font-bold mb-4 text-gray-700">${q.q}</h2><div class="emoji-img mb-6 animate-bounce">${q.img || '❓'}</div>
+                            <div class="grid grid-cols-1 gap-3">${q.options.map(opt => `<button onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', '${q.a.replace(/'/g, "\\")}')" class="btn-3d bg-white border-2 border-indigo-100 font-bold py-4 rounded-xl text-xl">${opt}</button>`).join('')}</div>`;
+                    break;
+                case 'tf':
+                    html = `<h2 class="text-2xl font-bold mb-4 text-gray-700">Đúng hay Sai?</h2><div class="emoji-img mb-4">${q.img}</div><h3 class="text-4xl font-black text-blue-600 mb-8">${q.q}</h3>
+                            <div class="flex gap-4"><button onclick="checkAnswer('true', '${q.a}')" class="flex-1 btn-3d bg-green-500 text-white font-bold py-5 rounded-xl text-2xl">ĐÚNG</button>
+                            <button onclick="checkAnswer('false', '${q.a}')" class="flex-1 btn-3d bg-red-500 text-white font-bold py-5 rounded-xl text-2xl">SAI</button></div>`;
+                    break;
+                case 'scramble':
+                    const shufParts = [...q.parts].sort(() => 0.5 - Math.random());
+                    html = `<h2 class="text-xl font-bold mb-6 text-gray-600">Sắp xếp: <span class="text-blue-600 text-2xl">${q.q}</span></h2>
+                            <div id="drop-zone" class="bg-gray-50 rounded-xl p-4 min-h-[80px] flex flex-wrap gap-2 mb-6 border-2 border-dashed border-gray-300 justify-center"></div>
+                            <div class="flex flex-wrap gap-2 justify-center">${shufParts.map(p => `<button onclick="selectWord(this)" class="btn-3d bg-yellow-100 px-4 py-2 rounded-lg font-bold text-xl">${p}</button>`).join('')}</div>
+                            <div class="mt-8"><button onclick="checkScramble('${q.a.replace(/'/g, "\\'")}')" class="btn-3d bg-blue-500 text-white px-8 py-3 rounded-full text-2xl">Kiểm tra</button></div>`;
+                    break;
+            }
+            area.innerHTML = html;
+        }
+
+        let currentSentence = [];
+        function selectWord(btn) {
+            currentSentence.push(btn.innerText);
+            btn.classList.add('opacity-0', 'pointer-events-none');
+            const span = document.createElement('span');
+            span.className = "bg-white border-2 border-blue-200 px-3 py-2 rounded-lg font-bold text-blue-800 animate-pop";
+            span.innerText = btn.innerText;
+            document.getElementById('drop-zone').appendChild(span);
+        }
+
+        function checkScramble(correct) {
+            const user = currentSentence.join(' ').replace(/[?.,!]/g, '').toLowerCase();
+            const real = correct.replace(/[?.,!]/g, '').toLowerCase();
+            checkAnswer(user, real);
+            currentSentence = [];
+        }
+
+        function checkAnswer(user, correct) {
+            const isCorrect = String(user).toLowerCase() === String(correct).toLowerCase();
+            const overlay = document.getElementById('feedback-overlay');
+            overlay.classList.remove('hidden');
+            
+            if (isCorrect) {
+                score += 10;
+                document.getElementById('score').innerText = score;
+                document.getElementById('feedback-box').className = "bg-white rounded-3xl p-8 text-center max-w-sm w-full shadow-2xl animate-pop border-b-8 border-green-400";
+                document.getElementById('feedback-icon').innerHTML = "🎉";
+                document.getElementById('feedback-text').innerText = "Tuyệt vời!";
+                document.getElementById('feedback-btn').className = "btn-3d w-full py-4 rounded-xl text-2xl bg-green-500 text-white";
+                speak("Bé giỏi quá, đúng rồi!", 'vi-VN');
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            } else {
+                if(!isReviewMode) wrongQuestions.push(questions[currentIdx]);
+                document.getElementById('feedback-box').className = "bg-white rounded-3xl p-8 text-center max-w-sm w-full shadow-2xl animate-pop border-b-8 border-red-400";
+                document.getElementById('feedback-icon').innerHTML = "😅";
+                document.getElementById('feedback-text').innerText = "Tiếc quá!";
+                document.getElementById('feedback-sub').innerText = `Đáp án đúng: ${correct}`;
+                document.getElementById('feedback-btn').className = "btn-3d w-full py-4 rounded-xl text-2xl bg-red-500 text-white";
+                speak("Không sao, thử lại nhé!", 'vi-VN');
+            }
         }
 
         function nextQuestion() {
-            if (qIndex >= sessionQuestions.length) {
-                finishGame();
-                return;
-            }
-
-            var percent = ((qIndex) / totalQ) * 100;
-            document.getElementById('progress-fill').style.width = percent + "%";
-
-            currentQ = sessionQuestions[qIndex];
-            qIndex++;
-
-            document.getElementById('feedback').innerText = "";
-            document.getElementById('q-text').innerText = currentQ.q;
-            document.getElementById('q-visual').innerText = currentQ.sub;
-            
-            var optionsArea = document.getElementById('options-area');
-            var spellingBoard = document.getElementById('spelling-board');
-            optionsArea.innerHTML = "";
-            spellingBoard.innerHTML = "";
-            spellingBoard.classList.add('hidden');
-
-            playCurrentAudio();
-
-            if (currentQ.type === "mcq") {
-                var answers = [currentQ.a].concat(currentQ.wrong);
-                answers.sort(function() { return 0.5 - Math.random() });
-                
-                answers.forEach(function(ans) {
-                    var btn = document.createElement('button');
-                    btn.className = 'btn';
-                    btn.innerText = ans;
-                    btn.onclick = function() { checkMCQ(ans); };
-                    optionsArea.appendChild(btn);
-                });
-            } else if (currentQ.type === "spell") {
-                setupSpellingGame(currentQ.a);
-            }
-        }
-
-        // --- LOGIC XẾP CHỮ (CÓ UNDO) ---
-        function setupSpellingGame(word) {
-            var spellingBoard = document.getElementById('spelling-board');
-            var optionsArea = document.getElementById('options-area');
-            
-            spellingBoard.classList.remove('hidden');
-            spellingState.target = word.toUpperCase();
-            spellingState.current = new Array(word.length).fill(null);
-            spellingState.letterPool = [];
-
-            // Tạo ô trống
-            for(var i=0; i<word.length; i++) {
-                var slot = document.createElement('div');
-                slot.className = 'spelling-slot';
-                slot.id = 'slot-' + i;
-                slot.innerText = "";
-                // Click vào ô để trả chữ về
-                slot.onclick = (function(index) {
-                    return function() { handleSlotClick(index); }
-                })(i);
-                spellingBoard.appendChild(slot);
-            }
-
-            // Tạo nút chữ cái
-            var letters = word.toUpperCase().split('');
-            var letterObjs = letters.map(function(char, index) {
-                return { char: char, id: index };
-            });
-            letterObjs.sort(function() { return 0.5 - Math.random() });
-
-            var letterContainer = document.createElement('div');
-            letterContainer.className = 'letter-container';
-
-            letterObjs.forEach(function(item) {
-                var btn = document.createElement('button');
-                btn.className = 'btn-letter visible';
-                btn.innerText = item.char;
-                btn.id = 'btn-letter-' + item.id;
-                btn.onclick = function() { handleLetterClick(item, btn); };
-                letterContainer.appendChild(btn);
-            });
-            optionsArea.appendChild(letterContainer);
-        }
-
-        function handleLetterClick(item, btnElem) {
-            var emptyIndex = spellingState.current.indexOf(null);
-            if (emptyIndex === -1) return;
-
-            spellingState.current[emptyIndex] = item;
-            document.getElementById('slot-' + emptyIndex).innerText = item.char;
-            
-            btnElem.classList.remove('visible');
-            btnElem.classList.add('used');
-
-            checkSpelling();
-        }
-
-        function handleSlotClick(slotIndex) {
-            var item = spellingState.current[slotIndex];
-            if (!item) return;
-
-            spellingState.current[slotIndex] = null;
-            document.getElementById('slot-' + slotIndex).innerText = "";
-
-            var btn = document.getElementById('btn-letter-' + item.id);
-            if (btn) {
-                btn.classList.remove('used');
-                btn.classList.add('visible');
-            }
-        }
-
-        function checkSpelling() {
-            if (spellingState.current.indexOf(null) !== -1) return;
-            var formedWord = spellingState.current.map(function(i) { return i.char }).join('');
-            
-            if (formedWord === spellingState.target) {
-                correctFeedback();
+            document.getElementById('feedback-overlay').classList.add('hidden');
+            document.getElementById('feedback-sub').innerText = '';
+            currentIdx++;
+            if (currentIdx < questions.length) {
+                renderQuestion();
+            } else if (wrongQuestions.length > 0 && !isReviewMode) {
+                isReviewMode = true; questions = [...wrongQuestions]; wrongQuestions = []; currentIdx = 0;
+                speak("Cùng ôn tập những câu chưa đúng nhé!", 'vi-VN');
+                renderQuestion();
             } else {
-                wrongFeedback();
-                setTimeout(function() {
-                    for(var i=0; i<spellingState.current.length; i++) {
-                        handleSlotClick(i);
-                    }
-                }, 1500);
+                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('end-screen').classList.remove('hidden');
+                document.getElementById('final-score-text').innerText = `Bé đã đạt được ${score} điểm!`;
+                speak("Chúc mừng bé đã hoàn thành bài học!", 'vi-VN');
             }
         }
-
-        // --- HÀM ÂM THANH (QUAN TRỌNG) ---
-        function speak(text, lang, fixedRate) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                var u = new SpeechSynthesisUtterance(text);
-                
-                u.lang = 'en-US'; // Luôn dùng voice tiếng Anh để đọc cho chuẩn
-                
-                if (fixedRate) {
-                    u.rate = fixedRate;
-                } else {
-                    // Logic tự động: Từ đơn đọc chậm (0.5), Câu dài đọc nhanh hơn (0.7)
-                    var isSentence = currentQ ? currentQ.isSentence : false;
-                    u.rate = isSentence ? 0.7 : 0.5; 
-                }
-                
-                window.speechSynthesis.speak(u);
-            }
-        }
-
-        function playCurrentAudio() {
-            if (currentQ && currentQ.audio) speak(currentQ.audio, 'en-US');
-        }
-
-        function checkMCQ(ans) {
-            if (ans === currentQ.a) {
-                correctFeedback();
-            } else {
-                wrongFeedback();
-            }
-        }
-
-        function correctFeedback() {
-            var fb = document.getElementById('feedback');
-            fb.innerHTML = '<span class="correct">Đúng rồi! Giỏi lắm Thanh Vân ơi! 🌟</span>';
-            // Động viên bằng tiếng Anh, giọng hào hứng
-            speak("Good job Thanh Van!", "en-US", 0.9); 
-            setTimeout(nextQuestion, 2000);
-        }
-
-        function wrongFeedback() {
-            var fb = document.getElementById('feedback');
-            fb.innerHTML = '<span class="wrong">Sai rồi, Thanh Vân thử lại nhé! 😅</span>';
-            speak("Try again!", "en-US", 0.8);
-        }
-
-        function finishGame() {
-            document.getElementById('game-screen').innerHTML = 
-                '<div class="card">' +
-                '<h1>HOAN HÔ THANH VÂN! 🏆</h1>' +
-                '<p style="font-size:5em">🎉</p>' +
-                '<p>Con đã làm rất tốt.</p>' +
-                '<button class="btn btn-home" onclick="location.reload()">Chơi lại nhé</button>' +
-                '</div>';
-            speak("Congratulations Thanh Van! You did a good job!", "en-US", 0.9);
-        }
-
-        function goHome() {
-            location.reload();
-        }
-
     </script>
 </body>
 </html>
