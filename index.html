@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
         body { font-family: 'Nunito', sans-serif; background-color: #fffaf0; overflow-x: hidden; }
@@ -26,11 +25,11 @@
         <div class="bg-white p-10 rounded-3xl shadow-2xl border-orange-200 border-b-8">
             <h1 class="text-4xl font-black text-orange-600 mb-2">THANH VÂN'S GAME</h1>
             <p class="text-gray-600 text-xl mb-8 font-bold">Ready to learn with Dad Hiệp? ❤️</p>
+            <div id="priority-msg" class="hidden mb-4 p-3 bg-yellow-100 text-yellow-700 rounded-xl font-bold text-sm">
+                🌟 Ưu tiên ôn lại các câu con đã làm sai nhé!
+            </div>
             <div class="grid grid-cols-2 gap-4 mb-10 text-5xl">
-                <span class="animate-bounce" style="animation-delay: 0.1s">🌈</span>
-                <span class="animate-bounce" style="animation-delay: 0.3s">📚</span>
-                <span class="animate-bounce" style="animation-delay: 0.5s">🚀</span>
-                <span class="animate-bounce" style="animation-delay: 0.7s">✨</span>
+                <span>🌈</span><span>📚</span><span>🚀</span><span>✨</span>
             </div>
             <button id="start-btn" class="btn-3d w-full bg-orange-500 hover:bg-orange-600 text-white font-black py-5 rounded-2xl text-3xl shadow-lg">
                 START! 🎮
@@ -76,30 +75,24 @@
     <script src="questions.js"></script>
 
     <script>
-        // Các biến trạng thái game
         let questions = [];
-        let wrongQuestions = [];
+        let wrongQuestionsCurrentRound = []; // Cho vòng ôn tập ngay lập tức
         let currentIdx = 0;
         let score = 0;
         let isReviewMode = false;
         let currentSentence = [];
         const QUESTIONS_PER_ROUND = 20;
 
-        // Cấu hình âm thanh tối ưu cho iPad
         const synth = window.speechSynthesis;
         let enVoice = null;
 
         function loadVoices() {
             const voices = synth.getVoices();
-            // Ưu tiên giọng Siri hoặc giọng Samantha chất lượng cao trên iOS
             enVoice = voices.find(v => v.lang.includes('en-US') && v.name.includes('Siri')) || 
                       voices.find(v => v.lang.includes('en-US') && v.name.includes('Samantha')) || 
                       voices.find(v => v.lang.includes('en-US')) || voices[0];
         }
-        
-        if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = loadVoices;
-        }
+        if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices();
 
         function speak(text) {
@@ -107,38 +100,60 @@
             const utter = new SpeechSynthesisUtterance(text);
             utter.voice = enVoice;
             utter.lang = 'en-US';
-            utter.rate = 0.85; // Đọc hơi chậm một chút để Vân dễ nghe
-            utter.pitch = 1.0;
+            utter.rate = 0.85;
             synth.speak(utter);
         }
 
-        // Hàm khởi tạo game (Sửa lỗi "not defined")
+        // --- HỆ THỐNG BỘ NHỚ THÔNG MINH ---
+        function getPersistentWrongQuestions() {
+            const data = localStorage.getItem('thanhVan_wrongAnswers');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveWrongQuestion(questionObj) {
+            let wrongs = getPersistentWrongQuestions();
+            // Lưu theo câu hỏi (tránh trùng lặp bằng cách so sánh nội dung)
+            if (!wrongs.find(q => q.q === questionObj.q)) {
+                wrongs.push(questionObj);
+                localStorage.setItem('thanhVan_wrongAnswers', JSON.stringify(wrongs));
+            }
+        }
+
+        function removeWrongQuestion(questionObj) {
+            let wrongs = getPersistentWrongQuestions();
+            wrongs = wrongs.filter(q => q.q !== questionObj.q);
+            localStorage.setItem('thanhVan_wrongAnswers', JSON.stringify(wrongs));
+        }
+
+        window.onload = function() {
+            const wrongs = getPersistentWrongQuestions();
+            if (wrongs.length > 0) {
+                document.getElementById('priority-msg').classList.remove('hidden');
+            }
+        };
+
         function startGame() {
-            console.log("Game started!");
-            
-            // Kiểm tra xem file questions.js đã load thành công chưa
             if (typeof fullBank === 'undefined') {
-                alert("Lỗi: Không tìm thấy dữ liệu trong file questions.js! Anh Hiệp kiểm tra lại file đó nhé.");
+                alert("Lỗi: Không tìm thấy questions.js!");
                 return;
             }
 
-            // Trộn và lấy 20 câu ngẫu nhiên
-            const shuffled = [...fullBank].sort(() => 0.5 - Math.random());
-            questions = shuffled.slice(0, Math.min(QUESTIONS_PER_ROUND, fullBank.length));
+            const persistentWrongs = getPersistentWrongQuestions();
+            let pool = [...fullBank].sort(() => 0.5 - Math.random());
             
-            currentIdx = 0; 
-            score = 0; 
-            wrongQuestions = []; 
-            isReviewMode = false;
-
+            // Lọc ra các câu trong pool mà không nằm trong danh sách sai để làm nguồn bổ sung
+            let otherQuestions = pool.filter(q => !persistentWrongs.find(w => w.q === q.q));
+            
+            // Kết hợp: Ưu tiên câu sai lên đầu, sau đó điền đầy đủ 20 câu
+            questions = [...persistentWrongs, ...otherQuestions].slice(0, QUESTIONS_PER_ROUND);
+            
+            currentIdx = 0; score = 0; wrongQuestionsCurrentRound = []; isReviewMode = false;
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            
             speak("Hello Thanh Vân, let's play with Dad!");
             renderQuestion();
         }
 
-        // Gán sự kiện cho nút Start sau khi trang load xong
         document.getElementById('start-btn').addEventListener('click', startGame);
 
         function renderQuestion() {
@@ -162,62 +177,84 @@
                     break;
                 case 'tf':
                     html = `<h2 class="text-2xl font-black mb-6 text-gray-700">True or False?</h2><div class="emoji-img mb-6">${q.img}</div><h3 class="text-5xl font-black text-orange-600 mb-10">${q.q}</h3>
-                            <div class="flex gap-5"><button onclick="checkAnswer('true', '${q.a}')" class="flex-1 btn-3d bg-green-500 text-white font-black py-6 rounded-3xl text-3xl text-center">TRUE ✅</button>
-                            <button onclick="checkAnswer('false', '${q.a}')" class="flex-1 btn-3d bg-red-500 text-white font-black py-6 rounded-3xl text-3xl text-center">FALSE ❌</button></div>`;
+                            <div class="flex gap-5"><button onclick="checkAnswer('true', '${q.a}')" class="flex-1 btn-3d bg-green-500 text-white font-black py-6 rounded-3xl text-3xl">TRUE ✅</button>
+                            <button onclick="checkAnswer('false', '${q.a}')" class="flex-1 btn-3d bg-red-500 text-white font-black py-6 rounded-3xl text-3xl">FALSE ❌</button></div>`;
                     break;
                 case 'scramble':
                     const shufParts = [...q.parts].sort(() => 0.5 - Math.random());
+                    currentSentence = [];
                     html = `<h2 class="text-2xl font-black mb-8 text-gray-600">Put the words in order:<br><span class="text-orange-600 text-3xl">"${q.q}"</span></h2>
                             <div id="drop-zone" class="bg-orange-50 rounded-3xl p-6 min-h-[100px] flex flex-wrap gap-3 mb-8 border-2 border-dashed border-orange-200 justify-center items-center"></div>
-                            <div class="flex flex-wrap gap-3 justify-center">${shufParts.map(p => `<button onclick="selectWord(this)" class="btn-3d bg-yellow-100 px-6 py-3 rounded-xl font-black text-2xl text-orange-800">${p}</button>`).join('')}</div>
+                            <div class="flex flex-wrap gap-3 justify-center">${shufParts.map((p, idx) => `<button id="scramble-btn-${idx}" onclick="selectWord(this, ${idx})" class="btn-3d bg-yellow-100 px-6 py-3 rounded-xl font-black text-2xl text-orange-800">${p}</button>`).join('')}</div>
                             <div class="mt-10"><button onclick="checkScramble('${q.a.replace(/'/g, "\\'")}')" class="btn-3d bg-orange-500 text-white px-12 py-4 rounded-full font-black text-3xl shadow-lg">Check! 🔍</button></div>`;
                     break;
             }
             area.innerHTML = html;
         }
 
-        function selectWord(btn) {
-            currentSentence.push(btn.innerText);
-            btn.classList.add('opacity-0', 'pointer-events-none');
+        // --- LOGIC XẾP CÂU NÂNG CAO ---
+        function selectWord(btn, idx) {
+            const word = btn.innerText;
+            const dropZone = document.getElementById('drop-zone');
+            
+            btn.style.visibility = 'hidden';
+            btn.style.pointerEvents = 'none';
+
             const span = document.createElement('span');
-            span.className = "bg-white border-2 border-orange-200 px-4 py-2 rounded-xl font-black text-orange-700 animate-bounce-in text-2xl";
-            span.innerText = btn.innerText;
-            document.getElementById('drop-zone').appendChild(span);
+            span.className = "bg-white border-2 border-orange-200 px-4 py-2 rounded-xl font-black text-orange-700 animate-bounce-in text-2xl cursor-pointer hover:bg-red-50 transition-colors";
+            span.innerText = word;
+            span.dataset.btnId = `scramble-btn-${idx}`;
+            
+            span.onclick = function() {
+                const originalBtn = document.getElementById(this.dataset.btnId);
+                originalBtn.style.visibility = 'visible';
+                originalBtn.style.pointerEvents = 'auto';
+                this.remove();
+            };
+
+            dropZone.appendChild(span);
         }
 
         function checkScramble(correct) {
-            const user = currentSentence.join(' ').replace(/[?.,!]/g, '').toLowerCase().trim();
+            const dropZone = document.getElementById('drop-zone');
+            const user = Array.from(dropZone.children).map(c => c.innerText).join(' ').replace(/[?.,!]/g, '').toLowerCase().trim();
             const real = correct.replace(/[?.,!]/g, '').toLowerCase().trim();
             checkAnswer(user, real);
-            currentSentence = [];
         }
 
         function checkAnswer(user, correct) {
             const isCorrect = String(user).toLowerCase() === String(correct).toLowerCase();
+            const q = questions[currentIdx];
             const overlay = document.getElementById('feedback-overlay');
             overlay.classList.remove('hidden');
             
-            const praises = ["Great job, Thanh Vân!", "Thanh Vân, you are amazing!", "Well done, Thanh Vân!", "Excellent, Thanh Vân!", "Superstar, Thanh Vân!"];
-            const reminds = ["Don't worry, Thanh Vân! Try again!", "Thanh Vân, you can do it!", "Keep going, Thanh Vân!", "Almost there, Thanh Vân!"];
+            const praises = ["Great job, Thanh Vân!", "Thanh Vân, you are amazing!", "Well done, Thanh Vân!", "Excellent, Thanh Vân!"];
+            const reminds = ["Don't worry, Thanh Vân!", "Thanh Vân, you can do it!", "Keep going, Thanh Vân!"];
 
             if (isCorrect) {
                 score += 10;
                 document.getElementById('score').innerText = score;
+                // Nếu đúng, xóa khỏi bộ nhớ ưu tiên
+                removeWrongQuestion(q);
+
                 document.getElementById('feedback-box').className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px] border-green-400";
                 document.getElementById('feedback-icon').innerHTML = "🌟";
                 document.getElementById('feedback-text').innerText = "BRILLIANT!";
                 document.getElementById('feedback-sub').innerText = "Correct, Thanh Vân!";
                 document.getElementById('feedback-btn').className = "btn-3d w-full py-5 rounded-2xl text-2xl font-black bg-green-500 text-white";
-                speak(praises[Math.floor(Math.random() * praises.length)]);
+                speak(praises[Math.floor(Math.random()*praises.length)]);
                 confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
             } else {
-                if (!isReviewMode) wrongQuestions.push(questions[currentIdx]);
+                if (!isReviewMode) wrongQuestionsCurrentRound.push(q);
+                // Nếu sai, lưu vào bộ nhớ ưu tiên cho lần chơi sau
+                saveWrongQuestion(q);
+
                 document.getElementById('feedback-box').className = "bg-white rounded-[40px] p-10 text-center max-w-sm w-full shadow-2xl animate-bounce-in border-b-[12px] border-red-400";
                 document.getElementById('feedback-icon').innerHTML = "💪";
                 document.getElementById('feedback-text').innerText = "KEEP IT UP!";
                 document.getElementById('feedback-sub').innerText = `Answer: ${correct}`;
                 document.getElementById('feedback-btn').className = "btn-3d w-full py-5 rounded-2xl text-2xl font-black bg-red-500 text-white";
-                speak(reminds[Math.floor(Math.random() * reminds.length)]);
+                speak(reminds[Math.floor(Math.random()*reminds.length)]);
             }
         }
 
@@ -226,11 +263,8 @@
             currentIdx++;
             if (currentIdx < questions.length) {
                 renderQuestion();
-            } else if (wrongQuestions.length > 0 && !isReviewMode) {
-                isReviewMode = true; 
-                questions = [...wrongQuestions]; 
-                wrongQuestions = []; 
-                currentIdx = 0;
+            } else if (wrongQuestionsCurrentRound.length > 0 && !isReviewMode) {
+                isReviewMode = true; questions = [...wrongQuestionsCurrentRound]; wrongQuestionsCurrentRound = []; currentIdx = 0;
                 speak("Review time for Thanh Vân! You can do it!");
                 renderQuestion();
             } else {
